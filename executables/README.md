@@ -56,7 +56,7 @@ hasher -zeros=24 -i hasher.go -o out -hash=SHA512 -end=2m
 using 'hasher.go', search for 24 leading zero bits in the SHA512 hash, output to 'out' file, abort after 2 minutes.
 
 
-output: pipe found nonce to 'hd' command to see hex data.
+example output: pipe the found nonce (after ~24M tests) to 'hd' command to see it in human readable form, (its also there in the log.)
 ```
 ./hasher -zeros=28 -i=testfile -hash=MD5 | hd
 2017/09/17 01:04:34 Loading:"testfile"
