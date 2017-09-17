@@ -13,48 +13,51 @@
 | darwin/amd64  | [macho64]          | Mach-O 64-bit x86_64 executable                                                           |                |
 | darwin/386    | [macho32]          | Mach-O i386 executable                                                                    |                |
 
-Usage of ./hasher:
-  -end duration
-    	search time limit.
-  -h	display help/usage.
-  -hash string
-    	hash type. one of "MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256" (default "SHA1")
-  -help
-    	display help/usage.
-  -i value
-    	input source bytes.(default:<Stdin>)
-  -input value
-    	input source bytes.(default:<Stdin>)
-  -interval duration
-    	time between log status reports. (default 1s)
-  -log value
-    	progress log destination.(default:Stderr)
-  -o value
-    	output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
-  -output value
-    	output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
-  -q	no progress logging.
-  -quiet
-    	no pregress logging.
-  -start uint
-    	Hash index to start search from.(default:#0)
-  -zeros uint
-    	Number of leading zero bits being looked for. (default 1)
-    	
+```
+  Usage of ./hasher:
+    -end duration
+        search time limit.
+    -h	display help/usage.
+    -hash string
+        hash type. one of "MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256" (default "SHA1")
+    -help
+        display help/usage.
+    -i value
+        input source bytes.(default:<Stdin>)
+    -input value
+        input source bytes.(default:<Stdin>)
+    -interval duration
+        time between log status reports. (default 1s)
+    -log value
+        progress log destination.(default:Stderr)
+    -o value
+        output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
+    -output value
+        output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
+    -q	no progress logging.
+    -quiet
+        no pregress logging.
+    -start uint
+        Hash index to start search from.(default:#0)
+    -zeros uint
+        Number of leading zero bits being looked for. (default 1)
+```    	
  
 example   	
    	
+```
 hasher -zeros=24 -hash=MD5 < test.bin >> test.bin
+```
+append to 'test.bin' to make it have an MD5 starting with 24 zero bits.
 
-append the 'test.bin' to make it have an MD5 starting with 24 zero bits.
-
+```
 hasher -zeros=24 -i hasher.go -o out -hash=SHA512 -end=2m
+```
+using 'hasher.go', search for 24 leading zero bits in the SHA512 hash, output to 'out' file, abort after 2 minutes.
 
-input go source 'hasher.go', search for 24 leading zero bits in the SHA512 hash, output to 'out' file, abort after 2 minutes.
 
-
-output: pipe found nonce to 'hd' to see hex data.
-
+output: pipe found nonce to 'hd' command to see hex data.
+```
 ./hasher -zeros=28 -i=testfile -hash=MD5 | hd
 2017/09/17 01:04:34 Loading:"sha1file"
 2017/09/17 01:04:34 Starting thread @ #1
@@ -71,6 +74,6 @@ output: pipe found nonce to 'hd' to see hex data.
 2017/09/17 01:04:44 #23827894 @9.7s	Match:"testfile"+[00 6a 94 b5] Saving:"/dev/stdout" Hash(MD5):[00 00 00 04 a5 d7 89 5a 8b 9f 89 74 05 cd be 71]
 00000000  00 6a 94 b5                                       |.j..|
 00000004
-
+```
 
 
