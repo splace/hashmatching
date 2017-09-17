@@ -43,20 +43,25 @@
         Number of leading zero bits being looked for. (default 1)
 ```    	
  
-example   	
-   	
+example: append to 'test.bin' to make it have an MD5 starting with 24 zero bits.
 ```
 hasher -zeros=24 -hash=MD5 < test.bin >> test.bin
 ```
-append to 'test.bin' to make it have an MD5 starting with 24 zero bits.
 
+example: with 'hasher.go', search for 24 leading zero bits in the SHA512 hash, output to 'out' file, give up after 2 minutes.
 ```
 hasher -zeros=24 -i hasher.go -o out -hash=SHA512 -end=2m
 ```
-using 'hasher.go', search for 24 leading zero bits in the SHA512 hash, output to 'out' file, abort after 2 minutes.
+
+example: 32bits leading zeros for a folder of files combined. then confirm the result.
+```
+cat * | hasher -zeros=32 -hash=SHA512 -end=24h > nonce
+
+cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
+```
 
 
-example output: pipe the found nonce (after ~24M tests) to 'hd' command to see it in human readable form, (its also there in the log.)
+example log output: pipe the found nonce (after ~24M tests) to 'hd' command to see it in human readable form, (its also there in the log.)
 ```
 ./hasher -zeros=28 -i=testfile -hash=MD5 | hd
 2017/09/17 01:04:34 Loading:"testfile"

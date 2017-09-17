@@ -1,7 +1,7 @@
 # hashmatching
 searchs for nonce, appended trailing bytes, for a file so it has a hash with a number of leading zeros.
 
-uses standard lib hashing code, so supports what it does, see; executables/readme/usage
+uses standard lib hashing routines, so supports what it does, see; executables/readme/usage/hash
 
 multihreaded, scales with cores pretty precisely, since no inter-thread comms.
 
