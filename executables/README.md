@@ -36,7 +36,7 @@
         output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
     -q	no progress logging.
     -quiet
-        no pregress logging.
+        no progress logging.
     -start uint
         Hash index to start search from.(default:#0)
     -zeros uint
@@ -59,7 +59,7 @@ using 'hasher.go', search for 24 leading zero bits in the SHA512 hash, output to
 output: pipe found nonce to 'hd' command to see hex data.
 ```
 ./hasher -zeros=28 -i=testfile -hash=MD5 | hd
-2017/09/17 01:04:34 Loading:"sha1file"
+2017/09/17 01:04:34 Loading:"testfile"
 2017/09/17 01:04:34 Starting thread @ #1
 2017/09/17 01:04:34 Starting thread @ #0
 2017/09/17 01:04:35 #2470657 @1s	2467328#/s	Mean Match:1m48s
