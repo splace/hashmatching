@@ -1,0 +1,65 @@
+../hasher<<>> -zeros=24 -hash=SHA512 -end=2m <sha1file >>sha1file2
+
+../hasher<<>> -zeros=24 -i ../hasher.go -o out -hash=SHA512 -end=2m
+
+ | hd
+
+hasher -zeros=24 -i=sha1file -hash=SHA1 | hd
+2017/09/16 23:59:38 Loading:"sha1file"
+2017/09/16 23:59:38 Starting thread @ #1
+2017/09/16 23:59:38 Starting thread @ #0
+2017/09/16 23:59:39 #1962757 @0.9s	Match:"sha1file"+[1c f2 04] Saving:"/dev/stdout" Hash(SHA1):[00 00 00 d2 d5 25 96 0a de bd 29 0e f7 08 3b 7b 31 e8 6a 3c]
+00000000  1c f2 04                                          |...|
+00000003
+
+
+hasher -zeros=28 -i=testfile -hash=MD5 | hd
+2017/09/17 01:04:34 Loading:"sha1file"
+2017/09/17 01:04:34 Starting thread @ #1
+2017/09/17 01:04:34 Starting thread @ #0
+2017/09/17 01:04:35 #2470657 @1s	2467328#/s	Mean Match:1m48s
+2017/09/17 01:04:36 #4995585 @2s	2524672#/s	Mean Match:1m46s
+2017/09/17 01:04:37 #7501569 @3s	2505984#/s	Mean Match:1m47s
+2017/09/17 01:04:38 #9953281 @4s	2451712#/s	Mean Match:1m49s
+2017/09/17 01:04:39 #12462081 @5s	2508288#/s	Mean Match:1m46s
+2017/09/17 01:04:40 #14931713 @6s	2469376#/s	Mean Match:1m48s
+2017/09/17 01:04:41 #17402881 @7s	2470912#/s	Mean Match:1m48s
+2017/09/17 01:04:42 #19837953 @8s	2434816#/s	Mean Match:1m50s
+2017/09/17 01:04:43 #22216961 @9s	2378752#/s	Mean Match:1m52s
+2017/09/17 01:04:44 #23827894 @9.7s	Match:"testfile"+[00 6a 94 b5] Saving:"/dev/stdout" Hash(MD5):[00 00 00 04 a5 d7 89 5a 8b 9f 89 74 05 cd be 71]
+00000000  00 6a 94 b5                                       |.j..|
+00000004
+
+hasher -h
+Usage of ./hasher:
+  -end duration
+    	search time limit.
+  -h	display help/usage.
+  -hash string
+    	hash type. one of "MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256" (default "SHA1")
+  -help
+    	display help/usage.
+  -i value
+    	input source bytes.(default:<Stdin>)
+  -input value
+    	input source bytes.(default:<Stdin>)
+  -interval duration
+    	time between log status reports. (default 1s)
+  -log value
+    	progress log destination.(default:Stderr)
+  -o value
+    	output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
+  -output value
+    	output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
+  -q	no progress logging.
+  -quiet
+    	no pregress logging.
+  -start uint
+    	Hash index to start search from.(default:#0)
+  -zeros uint
+    	Number of leading zero bits being looked for. (default 1)
+
+
+
+sha1sum sha1file2
+sha512sum sha1file2
