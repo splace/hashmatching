@@ -31,12 +31,16 @@ const timeoutStatusCode = 124
 
 func main() {
 	var leadingZeroCount uint
-	flag.UintVar(&leadingZeroCount, "zeros", 1, "Number of leading zero bits being looked for.")
+	flag.UintVar(&leadingZeroCount, "zeros", 1, "Number of leading bits being searched for.")
+	var setBits bool
+	flag.BoolVar(&setBits, "set", false, "State of leading bits being searched for.")
 	var hashType string
 	flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of \"MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256\"")
 	//flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256,BLAKE2s_256,BLAKE2b_256,BLAKE2b_384,BLAKE2b_512")
 	var startHashIndex uint64
 	flag.Uint64Var(&startHashIndex, "start", 0, "Hash index to start search from.(default:#0)")
+	var stopHashIndex uint64
+	flag.Uint64Var(&stopHashIndex, "stop", 0, "Hash index to stop search at.(default:#0 = unlimited)")
 	var logInterval time.Duration
 	flag.DurationVar(&logInterval, "interval", time.Second, "time between log status reports.")
 	var limit time.Duration
@@ -142,6 +146,11 @@ func main() {
 	if startHashIndex>0{
 		startHashIndex=uint64(hashIndexType(startHashIndex).Truncate(1))
 	}
+	if stopHashIndex>0{
+		stopHashIndex=uint64(hashIndexType(stopHashIndex).Truncate(1)+1)
+		}else{
+		stopHashIndex=1<<64-1
+	}
 
 	startTime := time.Now()
 	doLog := time.NewTicker(logInterval)
@@ -159,9 +168,20 @@ func main() {
 	}()
 
 
-
-	
-	matchCondition := leadingZeroBits(leadingZeroCount)
+	var matchCondition func([]byte) bool 
+	if setBits{
+		if leadingZeroCount%8==0{
+			matchCondition = leadingSetBytes(leadingZeroCount>>3)
+			}else{
+			matchCondition = leadingSetBits(leadingZeroCount)
+			}
+		}else{
+		if leadingZeroCount%8==0{
+			matchCondition = leadingZeroBytes(leadingZeroCount>>3)
+			}else{
+			matchCondition = leadingZeroBits(leadingZeroCount)
+		}
+	}
 
 	if sum := baseHasher.Sum(nil); matchCondition(sum) {
 		progressLog.Printf("Match on Source file as-is. Hash(%s):[% x]", hashType, sum)
@@ -175,7 +195,7 @@ func main() {
 		var nonce bytes.Buffer
 		var hasher, branchHasher hash.Hash
 		sum := make([]byte, baseHasher.Size())
-		for hi := start; ; hi += stride {
+		for hi := start; hi<=stopHashIndex ; hi += stride {
 			nonce.ReadFrom(hashIndexType(hi))
 			hasher = clone(baseHasher).(hash.Hash)
 			io.Copy(hasher, &nonce)
@@ -206,6 +226,8 @@ func main() {
 		startHashIndex++
 	}
 	searchStripe(startHashIndex)
+	progressLog.Printf("#%d @%.1fs Stopping Search of:%q", startHashIndex, time.Since(startTime).Seconds(), &source)
+
 }
 
 // copy an interface value using reflect (here for pointers to interfaces), because what we want isn't exposed.

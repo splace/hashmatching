@@ -1,5 +1,9 @@
 # hashmatching
-searchs for nonce, appended trailing bytes, for a file so it has a hash with a number of leading zeros.
+searchs for appended trailing bytes, the 'nonce', for some data so that its hash has at least the specified number equal leading bits.
+
+to search for a hash less than a value, say 2^^x, use (hash bit length)-x leading zero bits.
+
+for a SHA512 hash less than 2^^500, search for 12 leading zero bits. (for greater than use -set bits.)
 
 uses standard lib hashing routines, so supports what it does, see; executables/readme/usage/hash
 
