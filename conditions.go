@@ -104,7 +104,7 @@ func leadingSetBits(c uint) func([]byte) bool {
 		return leadingSetBytes(c >> 3)
 	}
 	return func(t []byte) bool {
-		return leadingSetBytes(c>>3)(t) && t[c>>3]>>(8-c%8) >0
+		return leadingSetBytes(c>>3)(t) && t[c>>3]>>(c%8) >0
 	}
 }
 
