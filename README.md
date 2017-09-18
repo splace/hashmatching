@@ -7,11 +7,11 @@ sequences of bytes have a reference number, uint64, called the hash index.
 
 to search for a hash less than a value, say 2^^x, use (hash bit length)-x leading zero bits.
 
-for a SHA512 hash less-than 2^^500, search for 12 leading zero bits. (for greater-than use -set bits.)
+for a SHA512 hash value less-than 2^^500, search for 12 leading zero bits. (for greater-than use -set bits.)
 
 each increment of the bit count halves to chance of matching, so on average doubles the searches needed.  
 
-uses standard lib hashing routines, so supports what it does, see; executables/readme/usage/hash
+uses the standard libs hashing routines, so supports what they do, see; executables/readme/usage/hash
 
 multihreaded, scales with cores pretty precisely, since no inter-thread comms.
 
