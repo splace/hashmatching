@@ -39,8 +39,8 @@ func main() {
 	//flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256,BLAKE2s_256,BLAKE2b_256,BLAKE2b_384,BLAKE2b_512")
 	var startHashIndex uint64
 	flag.Uint64Var(&startHashIndex, "start", 0, "Hash index to start search from.(default:#0)")
-	var stopHashIndex uint64
-	flag.Uint64Var(&stopHashIndex, "stop", 0, "Hash index to stop search at.(default:#0 = unlimited)")
+//	var stopHashIndex uint64
+//	flag.Uint64Var(&stopHashIndex, "stop", 0, "Hash index to stop search at.(default:#0 = unlimited)")
 	var logInterval time.Duration
 	flag.DurationVar(&logInterval, "interval", time.Second, "time between log status reports.")
 	var limit time.Duration
