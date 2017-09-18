@@ -170,17 +170,9 @@ func main() {
 
 	var matchCondition func([]byte) bool 
 	if setBits{
-		if leadingZeroCount%8==0{
-			matchCondition = leadingSetBytes(leadingZeroCount>>3)
-			}else{
-			matchCondition = leadingSetBits(leadingZeroCount)
-			}
+		matchCondition = leadingSetBits(leadingZeroCount)
 		}else{
-		if leadingZeroCount%8==0{
-			matchCondition = leadingZeroBytes(leadingZeroCount>>3)
-			}else{
-			matchCondition = leadingZeroBits(leadingZeroCount)
-		}
+		matchCondition = leadingZeroBits(leadingZeroCount)
 	}
 
 	if sum := baseHasher.Sum(nil); matchCondition(sum) {

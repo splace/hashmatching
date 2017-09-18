@@ -1,11 +1,13 @@
 package main
 
 func leadingZeroBits(c uint) func([]byte) bool {
+	cd8:=c>>3
+	emcm8:=(8-c%8)
 	if c%8 == 0 {
-		return leadingZeroBytes(c >> 3)
+		return leadingZeroBytes(cd8)
 	}
 	return func(t []byte) bool {
-		return leadingZeroBytes(c>>3)(t) && t[c>>3]>>(8-c%8) == 0
+		return leadingZeroBytes(cd8)(t) && t[cd8]>>emcm8 == 0
 	}
 }
 
@@ -100,11 +102,13 @@ func leadingZeroBytes(c uint) func([]byte) bool {
 
 
 func leadingSetBits(c uint) func([]byte) bool {
+	cd8:=c>>3
+	cm8:=(8-c%8)
 	if c%8 == 0 {
-		return leadingSetBytes(c >> 3)
+		return leadingSetBytes(cd8)
 	}
 	return func(t []byte) bool {
-		return leadingSetBytes(c>>3)(t) && t[c>>3]>>(c%8) >0
+		return leadingSetBytes(cd8)(t) && ^t[cd8]>>cm8 ==0
 	}
 }
 

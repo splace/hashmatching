@@ -14,33 +14,38 @@
 | darwin/386    | [macho32]          | Mach-O i386 executable                                                                    |                |
 
 ```
-  Usage of ./hasher:
-    -end duration
-        search time limit.
-    -h	display help/usage.
-    -hash string
-        hash type. one of "MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256" (default "SHA1")
-    -help
-        display help/usage.
-    -i value
-        input source bytes.(default:<Stdin>)
-    -input value
-        input source bytes.(default:<Stdin>)
-    -interval duration
-        time between log status reports. (default 1s)
-    -log value
-        progress log destination.(default:Stderr)
-    -o value
-        output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
-    -output value
-        output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
-    -q	no progress logging.
-    -quiet
-        no progress logging.
-    -start uint
-        Hash index to start search from.(default:#0)
-    -zeros uint
-        Number of leading zero bits being looked for. (default 1)
+Usage of ./hasher:
+  -end duration
+    	search time limit.
+  -h	display help/usage.
+  -hash string
+    	hash type. one of "MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256" (default "SHA1")
+  -help
+    	display help/usage.
+  -i value
+    	input source bytes.(default:<Stdin>)
+  -input value
+    	input source bytes.(default:<Stdin>)
+  -interval duration
+    	time between log status reports. (default 1s)
+  -log value
+    	progress log destination.(default:Stderr)
+  -o value
+    	output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
+  -output value
+    	output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
+  -q	no progress logging.
+  -quiet
+    	no pregress logging.
+  -set
+    	State of leading bits being searched for.
+  -start uint
+    	Hash index to start search from.(default:#0)
+  -stop uint
+    	Hash index to stop search at.(default:#0 = unlimited)
+  -zeros uint
+    	Number of leading bits being searched for. (default 1)
+
 ```    	
  
 example: append to 'test.bin' to make it have an MD5 starting with 24 zero bits.
