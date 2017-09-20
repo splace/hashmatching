@@ -11,7 +11,7 @@ each increment of the bit count halves to chance of matching, so on average doub
 
 uses the standard libs hashing routines, so supports what they do, see; executables/readme/usage/hash
 
-multihreaded, scales with cores pretty precisely, since no inter-thread comms.
+multi-threaded, scales with cores pretty precisely, since no inter-thread comms.
 
 sequences of bytes have a reference number, uint64, called the hash index, this can be used to start a new search where another left off, without duplication.
 
