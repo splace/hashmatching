@@ -13,7 +13,7 @@ uses the standard libs hashing routines, so supports what they do, see; executab
 
 multihreaded, scales with cores pretty precisely, since no inter-thread comms.
 
-sequences of bytes have a reference number, uint64, called the hash index.
+sequences of bytes have a reference number, uint64, called the hash index, this can be used to start a new search where another left off, without duplication.
 
 
 |cpu|hash rate SHA512|
