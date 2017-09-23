@@ -1,11 +1,13 @@
 # hashmatching
-searches through sequences of bytes, shortest first, so when appended to some source data they together have a hash with, a number of, its leading bits equal to either zero or set.
+searches through sequences of bytes, usually growing in length, that when appended to some source data they together have a hash with, a number of, its leading bits equal to either zero or one.
 
 for usage see; executables/readme/usage
 
 to search for a hash less than a value, say 2^^x, use (hash bit length)-x leading zero bits.
 
-so for a SHA512 hash value less-than 2^^500, search for 12 leading zero bits. (for greater-than use -set bits.)
+so for a SHA512 hash value less-than 2^^500, search for 12 leading zero bits.(default)
+
+to search for a hash greater than a value, say (2^^hash-bit-length - 2^^x), use x leading set bits.(-set option)
 
 each increment of the bit count halves to chance of matching, so on average doubles the searches needed.  
 
