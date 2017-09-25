@@ -36,31 +36,31 @@ Usage of ./hasher:
     	output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
   -q	no progress logging.
   -quiet
-    	no pregress logging.
+    	no progress logging.
   -set
-    	State of leading bits being searched for.
+    	leading bits set.
   -start uint
     	Hash index to start search from.(default:#0)
   -stop uint
     	Hash index to stop search at.(default:#0 = unlimited)
-  -zeros uint
+  -bits uint
     	Number of leading bits being searched for. (default 1)
 
 ```    	
  
 example: append to 'test.bin' to make it have an MD5 starting with 24 zero bits.
 ```
-hasher -zeros=24 -hash=MD5 < test.bin >> test.bin
+hasher -bits=24 -hash=MD5 < test.bin >> test.bin
 ```
 
 example: with 'hasher.go', search for 24 leading zero bits in the SHA512 hash, output to 'out' file, give up after 2 minutes.
 ```
-hasher -zeros=24 -i hasher.go -o out -hash=SHA512 -end=2m
+hasher -bits=24 -i hasher.go -o out -hash=SHA512 -end=2m
 ```
 
 example: 32bits leading zeros for a folder of files combined. then confirm the result.
 ```
-cat * | hasher -zeros=32 -hash=SHA512 -end=24h > nonce
+cat * | hasher -bits=32 -hash=SHA512 -end=24h > nonce
 
 cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
 ```
@@ -68,7 +68,7 @@ cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
 
 example log output: pipe the found nonce (after ~24M tests) to 'hd' command to see it in human readable form, (its also there in the log.)
 ```
-./hasher -zeros=28 -i=testfile -hash=MD5 | hd
+./hasher -bits=28 -i=testfile -hash=MD5 | hd
 2017/09/17 01:04:34 Loading:"testfile"
 2017/09/17 01:04:34 Starting thread @ #1
 2017/09/17 01:04:34 Starting thread @ #0
