@@ -35,7 +35,7 @@ func main() {
 	var leadingBitCount uint
 	flag.UintVar(&leadingBitCount, "bits", 1, "Number of leading bits being searched for.")
 	var bitState bool
-	flag.BoolVar(&bitState, "set", false, "State of leading bits being searched for.")
+	flag.BoolVar(&bitState, "set", false, "leading bits set.")
 	var hashType string
 	flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of \"MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256\"")
 	//flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256,BLAKE2s_256,BLAKE2b_256,BLAKE2b_384,BLAKE2b_512")
@@ -51,7 +51,7 @@ func main() {
 	flag.BoolVar(&help, "help", false, "display help/usage.")
 	flag.BoolVar(&help, "h", false, "display help/usage.")
 	var quiet bool
-	flag.BoolVar(&quiet, "quiet", false, "no pregress logging.")
+	flag.BoolVar(&quiet, "quiet", false, "no progress logging.")
 	flag.BoolVar(&quiet, "q", false, "no progress logging.")
 	var source fsflags.FileValue
 	flag.Var(&source, "i", "input source bytes.(default:<Stdin>)")
