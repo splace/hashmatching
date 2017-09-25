@@ -66,7 +66,7 @@ cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
 ```
 
 
-example log output: pipe the found nonce (after ~24M tests) to 'hd' command to see it in human readable form, (its also there in the log.)
+example log output: pipe the found nonce (4 bytes after ~24M tests) to the 'hd' command to be able to see it in human readable form, (its also there in the log.)
 ```
 ./hasher -bits=28 -i=testfile -hash=MD5 | hd
 2017/09/17 01:04:34 Loading:"testfile"
