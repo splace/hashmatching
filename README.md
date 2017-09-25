@@ -5,7 +5,7 @@ for usage see; executables/readme/usage
 
 to search for a hash less than a value, say 2^^x, use (hash bit length)-x leading zero bits.
 
-so for a SHA512 hash value less-than 2^^500, search for 12 leading zero bits.(default)
+so for a SHA512 hash value less-than 2^^500, search for 12 leading zero bits.
 
 to search for a hash greater than a value, say (2^^hash-bit-length - 2^^x), use x leading set bits.(-set option)
 
