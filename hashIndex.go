@@ -4,8 +4,8 @@ import "fmt"
 import "io"
 
 // hash index is a number, uint64, representing a deterministic non-redundant []byte.
-// all values have a byte sequence, but not all 8-byte sequences can be produced, because variable length means some states are encoded by the length.
-// the unproducable []byte's are above {0xFE,0xFE,0xFE,0xFE,0xFE,0xFE,0xFE,0xFE}
+// all index values have a unique byte sequence, but not all 8-byte sequences can be produced, because variable length means some states are encoded by the length.
+// the un=indexable []byte's are above {0xFE,0xFE,0xFE,0xFE,0xFE,0xFE,0xFE,0xFE}
 type hashIndexType uint64
 
 // new hash index from a []byte

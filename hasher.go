@@ -27,13 +27,15 @@ import (
 	"reflect"
 )
 
+import "github.com/splace/fsflags"
+
 const timeoutStatusCode = 124
 
 func main() {
-	var leadingZeroCount uint
-	flag.UintVar(&leadingZeroCount, "zeros", 1, "Number of leading bits being searched for.")
-	var setBits bool
-	flag.BoolVar(&setBits, "set", false, "State of leading bits being searched for.")
+	var leadingBitCount uint
+	flag.UintVar(&leadingBitCount, "bits", 1, "Number of leading bits being searched for.")
+	var bitState bool
+	flag.BoolVar(&bitState, "set", false, "State of leading bits being searched for.")
 	var hashType string
 	flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of \"MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256\"")
 	//flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256,BLAKE2s_256,BLAKE2b_256,BLAKE2b_384,BLAKE2b_512")
@@ -51,13 +53,13 @@ func main() {
 	var quiet bool
 	flag.BoolVar(&quiet, "quiet", false, "no pregress logging.")
 	flag.BoolVar(&quiet, "q", false, "no progress logging.")
-	var source fileValue
+	var source fsflags.FileValue
 	flag.Var(&source, "i", "input source bytes.(default:<Stdin>)")
 	flag.Var(&source, "input", "input source bytes.(default:<Stdin>)")
-	var sink newFileValue
+	var sink fsflags.CreateFileValue
 	flag.Var(&sink, "o", "output file, written with input file + nonce appended.(default:Stdout just written with nonce.)")
 	flag.Var(&sink, "output", "output file, written with input file + nonce appended.(default:Stdout just written with nonce.)")
-	var logToo newFileValue
+	var logToo fsflags.CreateFileValue
 	flag.Var(&logToo, "log", "progress log destination.(default:Stderr)")
 	flag.Parse()
 	
@@ -138,8 +140,8 @@ func main() {
 	}
 	source.Close()
 
-	if leadingZeroCount > 128 {
-		log.Fatalf("Aborting, leading zero bits over 128 not supported (%v)", leadingZeroCount)
+	if leadingBitCount > 128 {
+		log.Fatalf("Aborting, leading zero bits over 128 not supported (%v)", leadingBitCount)
 	}
 
 	// because of optimisation#1, need to find hash index with one byte removed.
@@ -162,17 +164,17 @@ func main() {
 				progressLog.Print("Aborting: time limit reached")
 				os.Exit(timeoutStatusCode)
 			}
-			progressLog.Printf("#%d @%v\t%.0f#/s\tMean Match:%v", startHashIndex, runningFor/time.Second*time.Second, float64(startHashIndex-lhashIndex)/logInterval.Seconds(), (logInterval / time.Duration(startHashIndex-lhashIndex) * (1 << leadingZeroCount) / time.Second * time.Second))
+			progressLog.Printf("#%d @%v\t%.0f#/s\tMean Match:%v", startHashIndex, runningFor/time.Second*time.Second, float64(startHashIndex-lhashIndex)/logInterval.Seconds(), (logInterval / time.Duration(startHashIndex-lhashIndex) * (1 << leadingBitCount) / time.Second * time.Second))
 			lhashIndex = startHashIndex
 		}
 	}()
 
 
 	var matchCondition func([]byte) bool 
-	if setBits{
-		matchCondition = leadingSetBits(leadingZeroCount)
+	if bitState{
+		matchCondition = leadingSetBits(leadingBitCount)
 		}else{
-		matchCondition = leadingZeroBits(leadingZeroCount)
+		matchCondition = leadingZeroBits(leadingBitCount)
 	}
 
 	if sum := baseHasher.Sum(nil); matchCondition(sum) {
