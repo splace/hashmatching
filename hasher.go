@@ -32,6 +32,8 @@ import "github.com/splace/fsflags"
 
 const timeoutStatusCode = 124
 
+type hashIndex = varbinary.Uint64
+
 func main() {
 	var leadingBitCount uint
 	flag.UintVar(&leadingBitCount, "bits", 1, "Number of leading bits being searched for.")
@@ -147,10 +149,10 @@ func main() {
 
 	// because of optimisation#1, need to find hash index with one byte removed.
 	if startHashIndex>0{
-		startHashIndex=uint64(varbinary.Uint64(startHashIndex).Truncate(1))
+		startHashIndex=uint64(hashIndex(startHashIndex).Truncate(1))
 	}
 	if stopHashIndex>0{
-		stopHashIndex=uint64(varbinary.Uint64(stopHashIndex).Truncate(1)+1)
+		stopHashIndex=uint64(hashIndex(stopHashIndex).Truncate(1)+1)
 		}else{
 		stopHashIndex=1<<64-1
 	}
@@ -193,7 +195,7 @@ func main() {
 		buf := make([]byte,8,8)
 		for hi := start; hi<=stopHashIndex ; hi += stride {
 			hasher = clone(baseHasher).(hash.Hash)
-			n=varbinary.PutUint64(buf,varbinary.Uint64(hi))
+			n=varbinary.PutUint64(buf,hashIndex(hi))
 			hasher.Write(buf[:n])
 			// optimisation#1: rather than check hash, with existing nonce, copy it and check all possible single bytes added to it. (+20% intel core2)
 			for i := range arrayOfBytePerms { // optimisation#1.1: use pre-generated array of []byte for added byte. (+5% intel core2)
@@ -202,8 +204,8 @@ func main() {
 				sum = branchHasher.Sum(nil)
 				if matchCondition(sum) {
 					doLog.Stop()
-					progressLog.Printf("#%d @%.1fs\tMatch:%q+[%s %x] Saving:%q Hash(%s):[% x]", varbinary.Uint64(hi).Append(arrayOfBytePerms[i][0]), time.Since(startTime).Seconds(), &source, varbinary.Uint64(hi), arrayOfBytePerms[i], &sink, hashType, sum)
-					io.Copy(sink, varbinary.Uint64(hi))
+					progressLog.Printf("#%d @%.1fs\tMatch:%q+[%s %x] Saving:%q Hash(%s):[% x]", hashIndex(hi).Append(arrayOfBytePerms[i][0]), time.Since(startTime).Seconds(), &source, hashIndex(hi), arrayOfBytePerms[i], &sink, hashType, sum)
+					io.Copy(sink, hashIndex(hi))
 					sink.Write(arrayOfBytePerms[i])
 					sink.Close()
 					os.Exit(0)
