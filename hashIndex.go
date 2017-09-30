@@ -3,7 +3,7 @@ package main
 import "fmt"
 import "io"
 
-// hash index is a number, uint64, representing a deterministic non-redundant []byte.
+// hash index is a number, uint64, with continuous, variable length []byte representation (binary encoding).
 // all index values have a unique byte sequence, but not all 8-byte sequences can be produced, because variable length means some states are encoded by the length.
 // the un=indexable []byte's are above {0xFE,0xFE,0xFE,0xFE,0xFE,0xFE,0xFE,0xFE}
 type hashIndexType uint64
