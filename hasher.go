@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"io"
 	"io/ioutil"
 	"log"
@@ -188,13 +187,14 @@ func main() {
 
 	searchStripe := func(start uint64) {
 		progressLog.Printf("Starting thread @ #%d", start)
-		var nonce bytes.Buffer
 		var hasher, branchHasher hash.Hash
-		sum := make([]byte, baseHasher.Size())
+		var sum []byte
+		var n int
+		buf := make([]byte,8,8)
 		for hi := start; hi<=stopHashIndex ; hi += stride {
-			nonce.ReadFrom(varbinary.Uint64(hi))
 			hasher = clone(baseHasher).(hash.Hash)
-			io.Copy(hasher, &nonce)
+			n=varbinary.PutUint64(buf,varbinary.Uint64(hi))
+			hasher.Write(buf[:n])
 			// optimisation#1: rather than check hash, with existing nonce, copy it and check all possible single bytes added to it. (+20% intel core2)
 			for i := range arrayOfBytePerms { // optimisation#1.1: use pre-generated array of []byte for added byte. (+5% intel core2)
 				branchHasher = clone(hasher).(hash.Hash)
@@ -209,7 +209,6 @@ func main() {
 					os.Exit(0)
 				}
 			}
-			nonce.Reset()
 			atomic.AddUint64(&startHashIndex, 256) //keep track of number checked, optimisation#1: each byte tested
 		}
 	}
