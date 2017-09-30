@@ -141,7 +141,7 @@ func main() {
 	source.Close()
 
 	if leadingBitCount > 128 {
-		log.Fatalf("Aborting, leading zero bits over 128 not supported (%v)", leadingBitCount)
+		log.Fatalf("Aborting, leading bits matching over 128 not supported (%v)", leadingBitCount)
 	}
 
 	// because of optimisation#1, need to find hash index with one byte removed.
