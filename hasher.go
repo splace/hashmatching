@@ -17,11 +17,11 @@ import (
 	_ "crypto/sha1"
 	_ "crypto/sha256"
 	_ "crypto/sha512"
-	//	_ "golang.org/x/crypto/blake2b"
-	//	_ "golang.org/x/crypto/blake2s"
-	//	_ "golang.org/x/crypto/md4"
-	//	_ "golang.org/x/crypto/ripemd160"
-	//	_ "golang.org/x/crypto/sha3"
+//	_ "golang.org/x/crypto/blake2b"
+//	_ "golang.org/x/crypto/blake2s"
+//	_ "golang.org/x/crypto/md4"
+//	_ "golang.org/x/crypto/ripemd160"
+//	_ "golang.org/x/crypto/sha3"
 	"hash"
 	"reflect"
 )
@@ -85,28 +85,28 @@ func main() {
 		baseHasher = crypto.SHA384.New()
 	case "SHA512":
 		baseHasher = crypto.SHA512.New()
-	case "RIPEMD160":
-		baseHasher = crypto.RIPEMD160.New()
-	case "SHA3_224":
-		baseHasher = crypto.SHA3_224.New()
-	case "SHA3_256":
-		baseHasher = crypto.SHA3_256.New()
-	case "SHA3_384":
-		baseHasher = crypto.SHA3_384.New()
-	case "SHA3_512":
-		baseHasher = crypto.SHA3_512.New()
 	case "SHA512_224":
 		baseHasher = crypto.SHA512_224.New()
 	case "SHA512_256":
 		baseHasher = crypto.SHA512_256.New()
-		//	case "BLAKE2s_256":
-		//		baseHasher = crypto.BLAKE2s_256.New()
-		//	case "BLAKE2b_256":
-		//		baseHasher = crypto.BLAKE2b_256.New()
-		//	case "BLAKE2b_384":
-		//		baseHasher = crypto.BLAKE2b_384.New()
-		//	case "BLAKE2b_512":
-		//		baseHasher = crypto.BLAKE2b_512.New()
+//	case "RIPEMD160":
+//		baseHasher = crypto.RIPEMD160.New()
+//	case "SHA3_224":
+//		baseHasher = crypto.SHA3_224.New()
+//	case "SHA3_256":
+//		baseHasher = crypto.SHA3_256.New()
+//	case "SHA3_384":
+//		baseHasher = crypto.SHA3_384.New()
+//	case "SHA3_512":
+//		baseHasher = crypto.SHA3_512.New()
+//	case "BLAKE2s_256":
+//		baseHasher = crypto.BLAKE2s_256.New()
+//	case "BLAKE2b_256":
+//		baseHasher = crypto.BLAKE2b_256.New()
+//	case "BLAKE2b_384":
+//		baseHasher = crypto.BLAKE2b_384.New()
+//	case "BLAKE2b_512":
+//		baseHasher = crypto.BLAKE2b_512.New()
 	default:
 		log.Fatalf("Aborting, Unknown Hash Scheme:" + hashType)
 	}
