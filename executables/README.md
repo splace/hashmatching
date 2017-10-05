@@ -82,5 +82,6 @@ example log of creating nonce, with 32 leading zero bits, on all exe's in this d
 0
 >
 ```
-Note:  check is a bit complex due to sha512sum not being able to pipe just the result.
+Note: check is a bit complex due to sha512sum not being able to pipe just the result.
+Note: the test part wont work if any other files but the exe's and the nonce, (like the README.md), are in the folder.
 
