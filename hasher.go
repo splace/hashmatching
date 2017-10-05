@@ -159,8 +159,8 @@ func main() {
 	doLog := time.NewTicker(logInterval)
 	go func() {
 		lhashIndex := startHashIndex
-		for _ = range doLog.C {
-			runningFor := time.Since(startTime)
+		for t := range doLog.C {
+			runningFor := t.Sub(startTime)
 			if limit > 0 && runningFor > limit {
 				progressLog.Print("Aborting: time limit reached")
 				os.Exit(timeoutStatusCode)
