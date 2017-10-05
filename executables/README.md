@@ -65,7 +65,6 @@ cat * | hasher -bits=32 -hash=SHA512 -end=24h > nonce
 cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
 ```
 
-
 example log of creating the 'nonce32' file in this folder, (32 leading zero bits), using all exe's in this directory: (4 bytes after ~10G tests) and then checking it.
 ```
 $  cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1h -hash=SHA512 -end=20h  > nonce32
@@ -82,5 +81,6 @@ $ echo $?
 0
 ```
 Note: check is a bit complex due to sha512sum not being able to pipe just the result.
+
 Note: the test part wont work if any other files but the exe's and the nonce, (like the README.md), are in the working folder.
 
