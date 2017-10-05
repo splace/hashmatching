@@ -66,22 +66,21 @@ cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
 ```
 
 
-example log of creating nonce, with 32 leading zero bits, on all exe's in this directory: (4 bytes after ~10G tests) and checking it.
+example log of creating the 'nonce32' file in this folder, (32 leading zero bits), using all exe's in this directory: (4 bytes after ~10G tests) and then checking it.
 ```
->  cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1h -hash=SHA512 -end=20h  > nonce32
+$  cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1h -hash=SHA512 -end=20h  > nonce32
 2017/09/17 01:04:34 Loading:"/dev/stdin"
 2017/09/17 01:04:34 Starting thread @ #1
 2017/09/17 01:04:34 Starting thread @ #0
 2017/09/17 02:04:35 #3846758400 @1h	1068544#/s	Mean Match:2h1m48s
 2017/09/17 03:04:35 #7693516800 @2h	1048544#/s	Mean Match:2h1m48s
 2017/09/17 03:44:44 #11540275200 @9600.7s	Match:"/dev/stdin"+[05 9d ff e7] Saving:"nonce32" Hash(SHA512):[00000000d5f8191be3980f7f55d8eac4aac568e376ed79bbaefb5f422870a5678e64a6d5b2f16bd449b853d2a06ef68c486e7a3ab11adeff792a054eb8ec905c]
->  cat !(nonce32) nonce32 | sha512sum
+$ cat !(nonce32) nonce32 | sha512sum
 00000000d5f8191be3980f7f55d8eac4aac568e376ed79bbaefb5f422870a5678e64a6d5b2f16bd449b853d2a06ef68c486e7a3ab11adeff792a054eb8ec905c  -
 >  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
-> echo $?
+$ echo $?
 0
->
 ```
 Note: check is a bit complex due to sha512sum not being able to pipe just the result.
-Note: the test part wont work if any other files but the exe's and the nonce, (like the README.md), are in the folder.
+Note: the test part wont work if any other files but the exe's and the nonce, (like the README.md), are in the working folder.
 
