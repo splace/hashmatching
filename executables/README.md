@@ -66,24 +66,21 @@ cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
 ```
 
 
-example log output: pipe the found nonce (4 bytes after ~24M tests) to the 'hd' command to be able to see it in human readable form, (its also there in the log.)
+example log of creating nonce, with 32 leading zero bits, on all exe's in this directory: (4 bytes after ~10G tests) and checking it.
 ```
-./hasher -bits=28 -i=testfile -hash=MD5 | hd
-2017/09/17 01:04:34 Loading:"testfile"
+>  cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1h -hash=SHA512 -end=20h  > nonce32
+2017/09/17 01:04:34 Loading:"/dev/stdin"
 2017/09/17 01:04:34 Starting thread @ #1
 2017/09/17 01:04:34 Starting thread @ #0
-2017/09/17 01:04:35 #2470657 @1s	2467328#/s	Mean Match:1m48s
-2017/09/17 01:04:36 #4995585 @2s	2524672#/s	Mean Match:1m46s
-2017/09/17 01:04:37 #7501569 @3s	2505984#/s	Mean Match:1m47s
-2017/09/17 01:04:38 #9953281 @4s	2451712#/s	Mean Match:1m49s
-2017/09/17 01:04:39 #12462081 @5s	2508288#/s	Mean Match:1m46s
-2017/09/17 01:04:40 #14931713 @6s	2469376#/s	Mean Match:1m48s
-2017/09/17 01:04:41 #17402881 @7s	2470912#/s	Mean Match:1m48s
-2017/09/17 01:04:42 #19837953 @8s	2434816#/s	Mean Match:1m50s
-2017/09/17 01:04:43 #22216961 @9s	2378752#/s	Mean Match:1m52s
-2017/09/17 01:04:44 #23827894 @9.7s	Match:"testfile"+[00 6a 94 b5] Saving:"/dev/stdout" Hash(MD5):[00 00 00 04 a5 d7 89 5a 8b 9f 89 74 05 cd be 71]
-00000000  00 6a 94 b5                                       |.j..|
-00000004
+2017/09/17 02:04:35 #3846758400 @1h	1068544#/s	Mean Match:2h1m48s
+2017/09/17 03:04:35 #7693516800 @2h	1048544#/s	Mean Match:2h1m48s
+2017/09/17 03:44:44 #11540275200 @9600.7s	Match:"/dev/stdin"+[05 9d ff e7] Saving:"nonce32" Hash(SHA512):[00000000d5f8191be3980f7f55d8eac4aac568e376ed79bbaefb5f422870a5678e64a6d5b2f16bd449b853d2a06ef68c486e7a3ab11adeff792a054eb8ec905c]
+>  cat !(nonce32) nonce32 | sha512sum
+00000000d5f8191be3980f7f55d8eac4aac568e376ed79bbaefb5f422870a5678e64a6d5b2f16bd449b853d2a06ef68c486e7a3ab11adeff792a054eb8ec905c  -
+>  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
+> echo $?
+0
+>
 ```
-
+Note:  check is a bit complex due to sha512sum not being able to pipe just the result.
 
