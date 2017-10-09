@@ -76,11 +76,15 @@ $  cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1h -hash=SHA512 -end=20h  
 2017/09/17 03:44:44 #11540275200 @9600.7s	Match:"/dev/stdin"+[05 9d ff e7] Saving:"nonce32" Hash(SHA512):[00000000d5f8191be3980f7f55d8eac4aac568e376ed79bbaefb5f422870a5678e64a6d5b2f16bd449b853d2a06ef68c486e7a3ab11adeff792a054eb8ec905c]
 $ cat !(nonce32) nonce32 | sha512sum
 00000000d5f8191be3980f7f55d8eac4aac568e376ed79bbaefb5f422870a5678e64a6d5b2f16bd449b853d2a06ef68c486e7a3ab11adeff792a054eb8ec905c  -
->  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
+$  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
 $ echo $?
 0
 ```
 Note: check is a bit complex due to sha512sum not being able to pipe just the result.
 
+<<<<<<< HEAD
 Note: the test part wont work if any other files but the exe's and the nonce, (like the README.md), are in the working folder.
+=======
+Note: commands checking hash, above, wont work if any other but the exe files and the nonce, (like the README.md), are in the working folder.
+>>>>>>> ab45807aa3537c5227a2249594ee54237d4699ec
 
