@@ -80,11 +80,6 @@ $  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo
 $ echo $?
 0
 ```
-Note: check is a bit complex due to sha512sum not being able to pipe just the result.
+Note#1: check is a bit complex due to sha512sum not being able to pipe just the result.
 
-<<<<<<< HEAD
-Note: the test part wont work if any other files but the exe's and the nonce, (like the README.md), are in the working folder.
-=======
-Note: commands checking hash, above, wont work if any other but the exe files and the nonce, (like the README.md), are in the working folder.
->>>>>>> ab45807aa3537c5227a2249594ee54237d4699ec
-
+Note#2: commands checking the result hash, above, wont work if any other but the exe files and the nonce, (example: the README.md), are in the working folder.
