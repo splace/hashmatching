@@ -67,15 +67,14 @@ cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
 
 example log of creating the 'nonce32' file in this folder, (32 leading zero bits), using all exe's in this directory: (4 bytes after ~10G tests) and then checking it.
 ```
-$  cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1h -hash=SHA512 -end=20h  > nonce32
-2017/09/17 01:04:34 Loading:"/dev/stdin"
-2017/09/17 01:04:34 Starting thread @ #1
-2017/09/17 01:04:34 Starting thread @ #0
-2017/09/17 02:04:35 #3846758400 @1h	1068544#/s	Mean Match:2h1m48s
-2017/09/17 03:04:35 #7693516800 @2h	1048544#/s	Mean Match:2h1m48s
-2017/09/17 03:44:44 #11540275200 @9600.7s	Match:"/dev/stdin"+[05 9d ff e7] Saving:"nonce32" Hash(SHA512):[00000000d5f8191be3980f7f55d8eac4aac568e376ed79bbaefb5f422870a5678e64a6d5b2f16bd449b853d2a06ef68c486e7a3ab11adeff792a054eb8ec905c]
+$ cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1m -hash=SHA512 -end=20h  > nonce32
+2017/10/09 23:39:03 Loading:"/dev/stdin"
+2017/10/09 23:39:03 Starting thread @ #1
+2017/10/09 23:39:03 Starting thread @ #0
+2017/10/10 00:19:03 #1991560961 @1h	1048866#/s	Mean Match:1h8m13s
+2017/10/10 00:33:25 #1185373805 @3262.6s	Match:"/dev/stdin"+[6C 5D A6 45] Saving:"/dev/stdout" Hash(SHA512):[00 00 00 00 54 16 0c 56 94 74 1e fc fc 18 bd b5 d3 e4 1a 3c 88 c6 c4 72 68 d6 2f 18 2b 1a b5 72 30 07 49 d7 34 74 5e d5 76 8f 02 2b de b5 21 15 96 22 a2 09 1d b7 1a 2a df 00 51 ba ac 3d 7a 97]
 $ cat !(nonce32) nonce32 | sha512sum
-00000000d5f8191be3980f7f55d8eac4aac568e376ed79bbaefb5f422870a5678e64a6d5b2f16bd449b853d2a06ef68c486e7a3ab11adeff792a054eb8ec905c  -
+0000000054160c5694741efcfc18bdb5d3e41a3c88c6c47268d62f182b1ab572300749d734745ed5768f022bdeb521159622a2091db71a2adf0051baac3d7a97  -
 $  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
 $ echo $?
 0
