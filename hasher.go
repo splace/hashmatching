@@ -36,18 +36,14 @@ type hashIndex struct{
 	varbinary.Uint64
 }
 
-func NewHashIndex(i uint64) hashIndex{
-	return hashIndex{Uint64:varbinary.Uint64(i)}
-}
-
-// return new hashindex whos representation is as the source hashindex but with added byte(s)
+// return new hashindex whose representation is as the source hashindex but with added byte(s)
 func hashIndexAppend(hi hashIndex, b ...byte) (nhi hashIndex) {
 	buf,_:=hi.MarshalBinary()
 	(&nhi).UnmarshalBinary(append(buf,b...))
 	return
 }
 
-// return new hashindex whos representation is as the source hashindex but with removed byte(s)
+// return new hashindex whose representation is as the source hashindex but with removed byte(s)
 func hashIndexTruncate(hi hashIndex,c int) (nhi hashIndex) {
 	buf,_:=hi.MarshalBinary()
 	(&nhi).UnmarshalBinary(buf[:len(buf)-c])
