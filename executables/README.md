@@ -67,7 +67,7 @@ cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
 
 example: the log from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) and then checking it.
 ```
-$ cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1m -hash=SHA512 -end=20h  > nonce32
+$ cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1h -hash=SHA512 -end=20h  > nonce32
 2017/10/09 23:39:03 Loading:"/dev/stdin"
 2017/10/09 23:39:03 Starting thread @ #1
 2017/10/09 23:39:03 Starting thread @ #0
@@ -83,5 +83,5 @@ Notes:
 
 Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(like README.md)
 
-The check is a bit complex because sha512sum isn't able to pipe just the result.
+The check is a complicated because sha512sum isn't able to pipe just the result.
 
