@@ -83,5 +83,5 @@ Notes:
 
 Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(like README.md)
 
-The check is a complicated because sha512sum isn't able to pipe just the result.
+The check is complicated because sha512sum isn't able to pipe just the result.
 
