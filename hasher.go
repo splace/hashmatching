@@ -218,12 +218,12 @@ func main() {
 		var n int
 		buf := make([]byte,8,8)
 		for hi := start; hi<=stopHashIndex ; hi += stride {
-			hasher = clone(baseHasher).(hash.Hash)
+			hasher = cloneHash(baseHasher)
 			n=varbinary.Uint64Put(varbinary.Uint64(hi),buf)
 			hasher.Write(buf[:n])
 			// optimisation#1: rather than check hash, with existing nonce, copy it and check all possible single bytes added to it. (+20% intel core2)
 			for i := range arrayOfBytePerms { // optimisation#1.1: use pre-generated array of []byte for added byte. (+5% intel core2)
-				branchHasher = clone(hasher).(hash.Hash)
+				branchHasher = cloneHash(hasher)
 				branchHasher.Write(arrayOfBytePerms[i])
 				sum = branchHasher.Sum(nil)
 				if matchCondition(sum) {
@@ -250,6 +250,10 @@ func main() {
 	searchStripe(startHashIndex)
 	progressLog.Printf("#%d @%.1fs Stopping Search of:%q", startHashIndex, time.Since(startTime).Seconds(), &source)
 
+}
+
+func cloneHash(h hash.Hash) hash.Hash{
+	return clone(h).(hash.Hash)
 }
 
 // copy an interface value using reflect (here for pointers to interfaces), because what we want isn't exposed.
