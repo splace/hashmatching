@@ -252,11 +252,12 @@ func main() {
 
 }
 
+//  need to clone hash because what we want isn't exposed, and forking hashing isn't possible due to its calls to the runtime.
 func cloneHash(h hash.Hash) hash.Hash{
 	return clone(h).(hash.Hash)
 }
 
-// copy an interface value using reflect (here for pointers to interfaces), because what we want isn't exposed.
+// copy an interface value using reflection (here for interfaces of pointers to interfaces)
 func clone(i interface{}) interface{} {
 	indirect := reflect.Indirect(reflect.ValueOf(i))
 	newIndirect := reflect.New(indirect.Type())
