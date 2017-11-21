@@ -1,9 +1,8 @@
 package main
 
 func leadingZeroBits(c uint) func([]byte) bool {
-	cd8:=c>>3
-	emcm8:=(8-c%8)
-	if c%8 == 0 {
+	cd8,emcm8:=c>>3,8-c%8
+	if emcm8 == 8 {
 		return leadingZeroBytes(cd8)
 	}
 	return func(t []byte) bool {
@@ -102,13 +101,12 @@ func leadingZeroBytes(c uint) func([]byte) bool {
 
 
 func leadingSetBits(c uint) func([]byte) bool {
-	cd8:=c>>3
-	cm8:=(8-c%8)
-	if c%8 == 0 {
+	cd8,emcm8:=c>>3,8-c%8
+	if emcm8 == 8 {
 		return leadingSetBytes(cd8)
 	}
 	return func(t []byte) bool {
-		return leadingSetBytes(cd8)(t) && ^t[cd8]>>cm8 ==0
+		return leadingSetBytes(cd8)(t) && ^t[cd8]>>emcm8 ==0
 	}
 }
 
