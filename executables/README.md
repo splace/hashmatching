@@ -84,16 +84,6 @@ $ cat ./executables/h* | ./hasher -bits=32 -interval=1m -hash=SHA256 -end=20h >n
 $ cat !(nonce32) nonce32 | sha256sum
 000000007d6781ea8b23145779b3164e8f5c7c9b71f70846eedff40fda8efe50  -
 $  cat !(nonce32) nonce32 | sha256sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
-=======
-$ cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1h -hash=SHA512 -end=20h  > nonce32
-2017/10/09 23:39:03 Loading:"/dev/stdin"
-2017/10/09 23:39:03 Starting thread @ #1
-2017/10/09 23:39:03 Starting thread @ #0
-2017/10/10 00:19:03 #1991560961 @1h	1048866#/s	Mean Match:1h8m13s
-2017/10/10 00:33:25 #1185373805 @3262.6s	Match:"/dev/stdin"+[6C 5D A6 45] Saving:"/dev/stdout" Hash(SHA512):[00 00 00 00 54 16 0c 56 94 74 1e fc fc 18 bd b5 d3 e4 1a 3c 88 c6 c4 72 68 d6 2f 18 2b 1a b5 72 30 07 49 d7 34 74 5e d5 76 8f 02 2b de b5 21 15 96 22 a2 09 1d b7 1a 2a df 00 51 ba ac 3d 7a 97]
-$ cat !(nonce32) nonce32 | sha512sum
-0000000054160c5694741efcfc18bdb5d3e41a3c88c6c47268d62f182b1ab572300749d734745ed5768f022bdeb521159622a2091db71a2adf0051baac3d7a97  -
-$  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
 $ echo $?
 0
 ```
