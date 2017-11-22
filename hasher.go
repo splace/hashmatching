@@ -257,11 +257,12 @@ func cloneHash(h hash.Hash) hash.Hash{
 	return clone(h).(hash.Hash)
 }
 
-// copy an interface value using reflection (here for interfaces of pointers to interfaces)
+// copy an interface value using reflection
 func clone(i interface{}) interface{} {
-	indirect := reflect.Indirect(reflect.ValueOf(i))
-	newIndirect := reflect.New(indirect.Type())
-	newIndirect.Elem().Set(reflect.ValueOf(indirect.Interface()))
-	return newIndirect.Interface()
-}
+	hv := reflect.ValueOf(i)
+	hv1 := reflect.New(hv.Type().Elem())
+	hv1.Elem().Set(hv.Elem())
+	return hv1.Interface()
+}       
+
 
