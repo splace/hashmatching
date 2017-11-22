@@ -32,24 +32,10 @@ import "github.com/splace/fsflags"
 
 const timeoutStatusCode = 124
 
+// use variable binary encoding as nonce
 type hashIndex struct{
 	varbinary.Uint64
 }
-
-// return new hashindex whose representation is as the source hashindex but with added byte(s)
-func hashIndexAppend(hi hashIndex, b ...byte) (nhi hashIndex) {
-	buf,_:=hi.MarshalBinary()
-	(&nhi).UnmarshalBinary(append(buf,b...))
-	return
-}
-
-// return new hashindex whose representation is as the source hashindex but with removed byte(s)
-func hashIndexTruncate(hi hashIndex,c int) (nhi hashIndex) {
-	buf,_:=hi.MarshalBinary()
-	(&nhi).UnmarshalBinary(buf[:len(buf)-c])
-	return
-}
-
 
 
 func main() {
@@ -264,5 +250,20 @@ func clone(i interface{}) interface{} {
 	hv1.Elem().Set(hv.Elem())
 	return hv1.Interface()
 }       
+
+
+// return new hashindex whose representation is as the source hashindex but with added byte(s)
+func hashIndexAppend(hi hashIndex, b ...byte) (nhi hashIndex) {
+	buf,_:=hi.MarshalBinary()
+	(&nhi).UnmarshalBinary(append(buf,b...))
+	return
+}
+
+// return new hashindex whose representation is as the source hashindex but with removed byte(s)
+func hashIndexTruncate(hi hashIndex,c int) (nhi hashIndex) {
+	buf,_:=hi.MarshalBinary()
+	(&nhi).UnmarshalBinary(buf[:len(buf)-c])
+	return
+}
 
 
