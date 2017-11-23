@@ -18,7 +18,7 @@ multi-threaded, scales with cores pretty precisely, since no inter-thread comms.
 sequences of bytes have a reference number, uint64, called the hash index, this can be used to start a new search where another left off, without duplication.
 
 
-|cpu|hash rate SHA512|watts|#/j|
+|cpu|hash rate SHA512|Watts|#/j|
 |-|-|-|-|
 |intel core2 2.6GHz|1.2M|60|20k|
 |raspberry pi3, 4core 1.2GHz|200k|2.5|80k|
