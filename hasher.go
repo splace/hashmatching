@@ -1,14 +1,14 @@
 package main
 
 import (
+	"flag"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"flag"
-	"time"
-	"sync/atomic"
 	"runtime"
+	"sync/atomic"
+	"time"
 )
 
 import (
@@ -17,15 +17,14 @@ import (
 	_ "crypto/sha1"
 	_ "crypto/sha256"
 	_ "crypto/sha512"
-//	_ "golang.org/x/crypto/blake2b"
-//	_ "golang.org/x/crypto/blake2s"
-//	_ "golang.org/x/crypto/md4"
-//	_ "golang.org/x/crypto/ripemd160"
-//	_ "golang.org/x/crypto/sha3"
+	//	_ "golang.org/x/crypto/blake2b"
+	//	_ "golang.org/x/crypto/blake2s"
+	//	_ "golang.org/x/crypto/md4"
+	//	_ "golang.org/x/crypto/ripemd160"
+	//	_ "golang.org/x/crypto/sha3"
 	"hash"
 	"reflect"
 )
-
 
 import "github.com/splace/varbinary"
 import "github.com/splace/fsflags"
@@ -33,10 +32,9 @@ import "github.com/splace/fsflags"
 const timeoutStatusCode = 124
 
 // use variable binary encoding as nonce
-type hashIndex struct{
+type hashIndex struct {
 	varbinary.Uint64
 }
-
 
 func main() {
 	var leadingBitCount uint
@@ -69,7 +67,7 @@ func main() {
 	var logToo fsflags.CreateFileValue
 	flag.Var(&logToo, "log", "progress log destination.(default:Stderr)")
 	flag.Parse()
-	
+
 	if help {
 		flag.Usage()
 		os.Exit(0)
@@ -77,10 +75,10 @@ func main() {
 
 	// for optimisation #1.1
 	var arrayOfBytePerms = [0x100][]byte{}
-	for i:=range(arrayOfBytePerms){
-		arrayOfBytePerms[i]=[]byte{byte(i)}
+	for i := range arrayOfBytePerms {
+		arrayOfBytePerms[i] = []byte{byte(i)}
 	}
-	
+
 	var baseHasher hash.Hash
 	switch hashType {
 	case "MD4":
@@ -101,24 +99,24 @@ func main() {
 		baseHasher = crypto.SHA512_224.New()
 	case "SHA512_256":
 		baseHasher = crypto.SHA512_256.New()
-//	case "RIPEMD160":
-//		baseHasher = crypto.RIPEMD160.New()
-//	case "SHA3_224":
-//		baseHasher = crypto.SHA3_224.New()
-//	case "SHA3_256":
-//		baseHasher = crypto.SHA3_256.New()
-//	case "SHA3_384":
-//		baseHasher = crypto.SHA3_384.New()
-//	case "SHA3_512":
-//		baseHasher = crypto.SHA3_512.New()
-//	case "BLAKE2s_256":
-//		baseHasher = crypto.BLAKE2s_256.New()
-//	case "BLAKE2b_256":
-//		baseHasher = crypto.BLAKE2b_256.New()
-//	case "BLAKE2b_384":
-//		baseHasher = crypto.BLAKE2b_384.New()
-//	case "BLAKE2b_512":
-//		baseHasher = crypto.BLAKE2b_512.New()
+		//	case "RIPEMD160":
+		//		baseHasher = crypto.RIPEMD160.New()
+		//	case "SHA3_224":
+		//		baseHasher = crypto.SHA3_224.New()
+		//	case "SHA3_256":
+		//		baseHasher = crypto.SHA3_256.New()
+		//	case "SHA3_384":
+		//		baseHasher = crypto.SHA3_384.New()
+		//	case "SHA3_512":
+		//		baseHasher = crypto.SHA3_512.New()
+		//	case "BLAKE2s_256":
+		//		baseHasher = crypto.BLAKE2s_256.New()
+		//	case "BLAKE2b_256":
+		//		baseHasher = crypto.BLAKE2b_256.New()
+		//	case "BLAKE2b_384":
+		//		baseHasher = crypto.BLAKE2b_384.New()
+		//	case "BLAKE2b_512":
+		//		baseHasher = crypto.BLAKE2b_512.New()
 	default:
 		log.Fatalf("Aborting, Unknown Hash Scheme:" + hashType)
 	}
@@ -126,14 +124,13 @@ func main() {
 	if logToo.File == nil {
 		logToo.File = os.Stderr
 	}
-	
+
 	var progressLog *log.Logger
 	if quiet {
-		progressLog=log.New(ioutil.Discard, "", log.LstdFlags)
-		}else{
-		progressLog=log.New(logToo, "", log.LstdFlags)
+		progressLog = log.New(ioutil.Discard, "", log.LstdFlags)
+	} else {
+		progressLog = log.New(logToo, "", log.LstdFlags)
 	}
-	
 
 	if source.File == nil {
 		source.File = os.Stdin
@@ -145,7 +142,7 @@ func main() {
 		if _, err := io.Copy(baseHasher, source); err != nil {
 			log.Fatal(err)
 		}
-		}else{
+	} else {
 		// if not stdout write the source to the sink now, so later writing of the nonce then is appended.
 		if _, err := io.Copy(baseHasher, io.TeeReader(source, sink)); err != nil {
 			log.Fatal(err)
@@ -158,13 +155,13 @@ func main() {
 	}
 
 	// because of optimisation#1, need to find hash index with one byte removed.
-	if startHashIndex>0{
-		startHashIndex=uint64(hashIndexTruncate(hashIndex{Uint64:varbinary.Uint64(startHashIndex)},1).Uint64)
+	if startHashIndex > 0 {
+		startHashIndex = uint64(hashIndexTruncate(hashIndex{Uint64: varbinary.Uint64(startHashIndex)}, 1).Uint64)
 	}
-	if stopHashIndex>0{
-		stopHashIndex=uint64(hashIndexTruncate(hashIndex{Uint64:varbinary.Uint64(stopHashIndex)},1).Uint64)+1
-		}else{
-		stopHashIndex=1<<64-1
+	if stopHashIndex > 0 {
+		stopHashIndex = uint64(hashIndexTruncate(hashIndex{Uint64: varbinary.Uint64(stopHashIndex)}, 1).Uint64) + 1
+	} else {
+		stopHashIndex = 1<<64 - 1
 	}
 
 	startTime := time.Now()
@@ -182,11 +179,10 @@ func main() {
 		}
 	}()
 
-
-	var matchCondition func([]byte) bool 
-	if bitState{
+	var matchCondition func([]byte) bool
+	if bitState {
 		matchCondition = leadingSetBits(leadingBitCount)
-		}else{
+	} else {
 		matchCondition = leadingZeroBits(leadingBitCount)
 	}
 
@@ -202,10 +198,10 @@ func main() {
 		var hasher, branchHasher hash.Hash
 		var sum []byte
 		var n int
-		buf := make([]byte,8,8)
-		for hi := start; hi<=stopHashIndex ; hi += stride {
+		buf := make([]byte, 8, 8)
+		for hi := start; hi <= stopHashIndex; hi += stride {
 			hasher = cloneHash(baseHasher)
-			n=varbinary.Uint64Put(varbinary.Uint64(hi),buf)
+			n = varbinary.Uint64Put(varbinary.Uint64(hi), buf)
 			hasher.Write(buf[:n])
 			// optimisation#1: rather than check hash, with existing nonce, copy it and check all possible single bytes added to it. (+20% intel core2)
 			for i := range arrayOfBytePerms { // optimisation#1.1: use pre-generated array of []byte for added byte. (+5% intel core2)
@@ -214,8 +210,8 @@ func main() {
 				sum = branchHasher.Sum(nil)
 				if matchCondition(sum) {
 					doLog.Stop()
-					progressLog.Printf("#%d @%.1fs\tMatch:%q+[%s %x] Saving:%q Hash(%s):[% x]", uint64(hashIndexAppend(hashIndex{Uint64:varbinary.Uint64(hi)},arrayOfBytePerms[i][0]).Uint64), time.Since(startTime).Seconds(), &source, varbinary.Uint64(hi), arrayOfBytePerms[i], &sink, hashType, sum)
-					n=varbinary.Uint64Put(varbinary.Uint64(hi),buf)
+					progressLog.Printf("#%d @%.1fs\tMatch:%q+[%s %x] Saving:%q Hash(%s):[% x]", uint64(hashIndexAppend(hashIndex{Uint64: varbinary.Uint64(hi)}, arrayOfBytePerms[i][0]).Uint64), time.Since(startTime).Seconds(), &source, varbinary.Uint64(hi), arrayOfBytePerms[i], &sink, hashType, sum)
+					n = varbinary.Uint64Put(varbinary.Uint64(hi), buf)
 					sink.Write(buf[:n])
 					sink.Write(arrayOfBytePerms[i])
 					sink.Close()
@@ -239,7 +235,7 @@ func main() {
 }
 
 //  need to clone hash because what we want isn't exposed, and forking hashing isn't possible due to its calls to the runtime.
-func cloneHash(h hash.Hash) hash.Hash{
+func cloneHash(h hash.Hash) hash.Hash {
 	return clone(h).(hash.Hash)
 }
 
@@ -249,19 +245,18 @@ func clone(i interface{}) interface{} {
 	hv1 := reflect.New(hv.Type().Elem())
 	hv1.Elem().Set(hv.Elem())
 	return hv1.Interface()
-}       
-
+}
 
 // return new hashindex whose representation is as the source hashindex but with added byte(s)
 func hashIndexAppend(hi hashIndex, b ...byte) (nhi hashIndex) {
-	buf,_:=hi.MarshalBinary()
-	(&nhi).UnmarshalBinary(append(buf,b...))
+	buf, _ := hi.MarshalBinary()
+	(&nhi).UnmarshalBinary(append(buf, b...))
 	return
 }
 
 // return new hashindex whose representation is as the source hashindex but with removed byte(s)
-func hashIndexTruncate(hi hashIndex,c int) (nhi hashIndex) {
-	buf,_:=hi.MarshalBinary()
+func hashIndexTruncate(hi hashIndex, c int) (nhi hashIndex) {
+	buf, _ := hi.MarshalBinary()
 	(&nhi).UnmarshalBinary(buf[:len(buf)-c])
 	return
 }
