@@ -62,7 +62,7 @@ example: 32bits leading zeros for a folder of files combined. then confirm the r
 ```
 cat * | hasher -bits=32 -hash=SHA512 -end=24h > nonce
 
-cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
+cat !(nonce) nonce | sha512sum   # cat command here pipes files deterministically but with the nonce file last, as needed to get the right hash.
 ```
 
 example: the log from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) and then checking it.
