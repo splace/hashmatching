@@ -65,7 +65,7 @@ cat * | hasher -bits=32 -hash=SHA512 -end=24h > nonce
 cat !(nonce) nonce | sha512sum   # cat command here pipes files deterministically but with the nonce file last, as needed to get the right hash.
 ```
 
-example: the log from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) and then checking it.
+example: the log from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) using 2 threads and then checking it.
 ```
 $ cat ./executables/h* | ./hasher -bits=32 -interval=1m -hash=SHA256 -end=20h >nonce
 2017/11/22 19:13:37 Loading:"/dev/stdin"
