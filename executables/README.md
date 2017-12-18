@@ -89,7 +89,7 @@ $ echo $?
 ```
 Notes: 
 
-Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(like README.md)
+Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(this file 'README.md' will need to not be in the working folder.)
 
-The check is a bit complex because sha256sum isn't able to pipe just the result.
+The check is a bit complex simply because the command 'sha256sum' isn't able to pipe just the result.
 
