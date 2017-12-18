@@ -1,5 +1,4 @@
-# hashmatching
-searches through sequences of bytes, usually growing in length, that when appended to some source data they together have a hash with, a number of, its leading bits equal to either zero or one.
+searches for a sequences of bytes, usually starting short and growing in length, that when appended to some source data they together have a hash with, a number of, its leading bits equal to either zero or one.
 
 for usage see; executables/readme/usage
 
