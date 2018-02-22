@@ -62,10 +62,10 @@ example: 32bits leading zeros for a folder of files combined. then confirm the r
 ```
 cat * | hasher -bits=32 -hash=SHA512 -end=24h > nonce
 
-cat !(nonce) nonce | sha512sum   # nonce needs to be separated to the end.
+cat !(nonce) nonce | sha512sum   # cat command here pipes files deterministically but with the nonce file last, as needed to get the right hash.
 ```
 
-example: the log from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) and then checking it.
+example: the log from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) using 2 threads and then checking it.
 ```
 $ cat ./executables/h* | ./hasher -bits=32 -interval=1m -hash=SHA256 -end=20h >nonce
 2017/11/22 19:13:37 Loading:"/dev/stdin"
@@ -89,7 +89,7 @@ $ echo $?
 ```
 Notes: 
 
-Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(like README.md)
+Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(this file 'README.md' will need to not be in the working folder.)
 
-The check is a bit complex because sha256sum isn't able to pipe just the result.
+The check is a bit complex simply because the command 'sha256sum' isn't able to pipe just the result.
 
