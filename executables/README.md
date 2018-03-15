@@ -67,7 +67,7 @@ cat !(nonce) nonce | sha512sum   # cat command here pipes files deterministicall
 
 example: the log from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) using 2 threads and then checking it.
 ```
-$ cat ./executables/h* | ./hasher -bits=32 -interval=1m -hash=SHA256 -end=20h >nonce
+$ cat ./executables/h* | ./hasher -bits=32 -interval=1m -hash=SHA512 -end=20h >nonce
 2017/11/22 19:13:37 Loading:"/dev/stdin"
 2017/11/22 19:13:37 Starting thread @ #1
 2017/11/22 19:13:37 Starting thread @ #0
@@ -80,10 +80,10 @@ $ cat ./executables/h* | ./hasher -bits=32 -interval=1m -hash=SHA256 -end=20h >n
 2017/11/22 19:20:37 #771112193 @7m0s	1958178#/s	Mean Match:36m30s
 2017/11/22 19:21:37 #888539393 @8m0s	1957116#/s	Mean Match:36m30s
 2017/11/22 19:22:37 #1006185729 @9m0s	1960772#/s	Mean Match:36m30s
-2017/11/22 19:22:58 #792590372 @561.0s	Match:"/dev/stdin"+[23 F7 3C 2e] Saving:"/dev/stdout" Hash(SHA256):[00 00 00 00 7d 67 81 ea 8b 23 14 57 79 b3 16 4e 8f 5c 7c 9b 71 f7 08 46 ee df f4 0f da 8e fe 50]
-$ cat !(nonce32) nonce32 | sha256sum
-000000007d6781ea8b23145779b3164e8f5c7c9b71f70846eedff40fda8efe50  -
-$  cat !(nonce32) nonce32 | sha256sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
+2017/11/22 19:22:58 #792590372 @561.0s	Match:"/dev/stdin"+[23 F7 3C 2e] Saving:"/dev/stdout" Hash(SHA256):[00 00 00 00 dc 31 bc c4 47 16 3c f0 0d 16 9e 5d 13 b5 a7 c1 9a 11 eb c8 5d 88 1f 2e a0 22 3b fc 71 e5 2b 70 ea 26 75 55 eb 67 7c 83 ff d9 9e 3f e2 72 55 2b 54 70 ff e3 2e 6d 12 1f 52 f0 a5 be]
+$ cat !(nonce32) nonce32 | sha512sum
+00000000dc31bcc447163cf00d169e5d13b5a7c19a11ebc85d881f2ea0223bfc71e52b70ea267555eb677c83ffd99e3fe272552b5470ffe32e6d121f52f0a5be  -
+$  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '00000001' ]]
 $ echo $?
 0
 ```
@@ -91,5 +91,5 @@ Notes:
 
 Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(this file 'README.md' will need to not be in the working folder.)
 
-The check is a bit complex simply because the command 'sha256sum' isn't able to pipe just the result.
+The check is so complex simply because the command 'sha256sum' isn't able to pipe just the result.
 
