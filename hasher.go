@@ -174,7 +174,7 @@ func main() {
 				progressLog.Print("Aborting: time limit reached")
 				os.Exit(timeoutStatusCode)
 			}
-			progressLog.Printf("#%d @%v\t%.0f#/s\tMean Match:%v", startHashIndex, runningFor/time.Second*time.Second, float64(startHashIndex-lhashIndex)/logInterval.Seconds(), (logInterval / time.Duration(startHashIndex-lhashIndex) * (1 << leadingBitCount) / time.Second * time.Second))
+			progressLog.Printf("∑#%d @%v\t%.0f#/s\tMean Match:%v", startHashIndex, runningFor/time.Second*time.Second, float64(startHashIndex-lhashIndex)/logInterval.Seconds(), (logInterval / time.Duration(startHashIndex-lhashIndex) * (1 << leadingBitCount) / time.Second * time.Second))
 			lhashIndex = startHashIndex
 		}
 	}()
@@ -196,18 +196,25 @@ func main() {
 	searchStripe := func(start uint64) {
 		progressLog.Printf("Starting thread @ #%d", start)
 		var hasher, branchHasher hash.Hash
-		var sum []byte
+		var hv,hv1 reflect.Value
+		sum:=make([]byte,baseHasher.Size(),baseHasher.Size())
 		var n int
 		buf := make([]byte, 8, 8)
 		for hi := start; hi <= stopHashIndex; hi += stride {
-			hasher = cloneHash(baseHasher)
+			hv = reflect.ValueOf(baseHasher)
+			hv1 = reflect.New(hv.Type().Elem())
+			hv1.Elem().Set(hv.Elem())
+			hasher = hv1.Interface().(hash.Hash)
 			n = varbinary.Uint64Put(varbinary.Uint64(hi), buf)
 			hasher.Write(buf[:n])
 			// optimisation#1: rather than check hash, with existing nonce, copy it and check all possible single bytes added to it. (+20% intel core2)
 			for i := range arrayOfBytePerms { // optimisation#1.1: use pre-generated array of []byte for added byte. (+5% intel core2)
-				branchHasher = cloneHash(hasher)
+				hv = reflect.ValueOf(hasher)
+				hv1 = reflect.New(hv.Type().Elem())
+				hv1.Elem().Set(hv.Elem())
+				branchHasher = hv1.Interface().(hash.Hash)
 				branchHasher.Write(arrayOfBytePerms[i])
-				sum = branchHasher.Sum(nil)
+				branchHasher.Sum(sum[:0])
 				if matchCondition(sum) {
 					doLog.Stop()
 					progressLog.Printf("#%d @%.1fs\tMatch:%q+[%s %x] Saving:%q Hash(%s):[% x]", uint64(hashIndexAppend(hashIndex{Uint64: varbinary.Uint64(hi)}, arrayOfBytePerms[i][0]).Uint64), time.Since(startTime).Seconds(), &source, varbinary.Uint64(hi), arrayOfBytePerms[i], &sink, hashType, sum)
@@ -232,19 +239,6 @@ func main() {
 	searchStripe(startHashIndex)
 	progressLog.Printf("#%d @%.1fs Stopping Search of:%q", startHashIndex, time.Since(startTime).Seconds(), &source)
 
-}
-
-//  need to clone hash because what we want isn't exposed, and forking hashing isn't possible due to its calls to the runtime.
-func cloneHash(h hash.Hash) hash.Hash {
-	return clone(h).(hash.Hash)
-}
-
-// copy an interface value using reflection
-func clone(i interface{}) interface{} {
-	hv := reflect.ValueOf(i)
-	hv1 := reflect.New(hv.Type().Elem())
-	hv1.Elem().Set(hv.Elem())
-	return hv1.Interface()
 }
 
 // return new hashindex whose representation is as the source hashindex but with added byte(s)
