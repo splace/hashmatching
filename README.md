@@ -24,8 +24,9 @@ sequences of bytes have a reference number, uint64, called the hash index, this 
 
 |cpu|hash rate SHA512|Watts|#/j|
 |-|-|-|-|
-|intel core2 2.6GHz|1.2M|60|20k|
-|raspberry pi3, 4core 1.2GHz|200k|2.5|80k|
-|intel i7 7700K  4.2GHz|8M (guess)|90|90k|
-|Threadripper 1920X 4GHz|20M (big guess)|180|110k|
+|E4700, 2-Core 2.6GHz|1.2M|60|20k|
+|raspberry pi3, 4-Core 1.2GHz|200k|2.5|80k|
+|i7 7700K  4-core 4.2GHz|8M (guess)|90|90k|
+|Threadripper 1920X 12-Core 4GHz|20M (big guess)|180|110k|
+|AMD A10-9600P, 4-Core 2.3GHz|3M|15|200k|
 
