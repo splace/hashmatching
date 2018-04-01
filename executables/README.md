@@ -67,22 +67,16 @@ cat !(nonce) nonce | sha512sum   # cat command here pipes files deterministicall
 
 example: the log produced from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) using 2 threads and then checking it.
 ```
-$ cat ./executables/h* | ./hasher -bits=32 -interval=1m -hash=SHA512 -end=20h >nonce
-2017/11/22 19:13:37 Loading:"/dev/stdin"
-2017/11/22 19:13:37 Starting thread @ #1
-2017/11/22 19:13:37 Starting thread @ #0
-2017/11/22 19:14:37 #88373761 @1m0s	1472896#/s	Mean Match:48m31s
-2017/11/22 19:15:37 #204323585 @2m0s	1932497#/s	Mean Match:37m0s
-2017/11/22 19:16:37 #319421953 @3m0s	1918302#/s	Mean Match:37m17s
-2017/11/22 19:17:37 #435353089 @4m0s	1932181#/s	Mean Match:37m0s
-2017/11/22 19:18:37 #551335169 @5m0s	1933035#/s	Mean Match:37m0s
-2017/11/22 19:19:37 #653621249 @6m0s	1704768#/s	Mean Match:41m56s
-2017/11/22 19:20:37 #771112193 @7m0s	1958178#/s	Mean Match:36m30s
-2017/11/22 19:21:37 #888539393 @8m0s	1957116#/s	Mean Match:36m30s
-2017/11/22 19:22:37 #1006185729 @9m0s	1960772#/s	Mean Match:36m30s
-2017/11/22 19:22:58 #792590372 @561.0s	Match:"/dev/stdin"+[23 F7 3C 2e] Saving:"/dev/stdout" Hash(SHA512):[00 00 00 00 dc 31 bc c4 47 16 3c f0 0d 16 9e 5d 13 b5 a7 c1 9a 11 eb c8 5d 88 1f 2e a0 22 3b fc 71 e5 2b 70 ea 26 75 55 eb 67 7c 83 ff d9 9e 3f e2 72 55 2b 54 70 ff e3 2e 6d 12 1f 52 f0 a5 be]
-$ cat !(nonce32) nonce32 | sha512sum
-00000000dc31bcc447163cf00d169e5d13b5a7c19a11ebc85d881f2ea0223bfc71e52b70ea267555eb677c83ffd99e3fe272552b5470ffe32e6d121f52f0a5be  -
+cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1m -hash=SHA512 -end=20h >nonce32
+2018/04/01 20:33:08 Loading:"/dev/stdin"
+2018/04/01 20:33:08 Starting thread @ #1
+2018/04/01 20:33:08 Starting thread @ #0
+2018/04/01 20:34:08 ∑#85731841 @1m0s	1428864#/s	Mean Match:50m2s
+2018/04/01 20:35:08 ∑#173457665 @2m0s	1462093#/s	Mean Match:48m53s
+...
+2018/04/01 21:38:35 #1036520539 @3926.9s	Match:"/dev/stdin"+[5A 0B C7 3c] Saving:"/dev/stdout" Hash(SHA512):[00 00 00 00 59 21 8c 81 f3 53 3a 65 48 57 ba 2b f0 40 e0 51 57 b3 6f 25 a7 12 cc 74 9e b7 a4 7b 33 63 2b 8e 05 1b 0e 42 d5 7e ad 3b 61 bb cf b0 22 76 11 6c 73 e7 63 0a 81 cd 5e 70 d3 b1 61 49]
+cat executables/h* executables/nonce32 | sha512sum
+0000000059218c81f3533a654857ba2bf040e05157b36f25a712cc749eb7a47b33632b8e051b0e42d57ead3b61bbcfb02276116c73e7630a81cd5e70d3b16149  -
 $  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '1' ]]
 $ echo $?
 0
