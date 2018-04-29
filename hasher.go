@@ -1,4 +1,7 @@
+// searches for a sequence of bytes, usually starting short and growing in length, that when appended to some source data they together have a hash with, a number of, its leading bits equal to either zero or one.
 package main
+
+//TODO could match multiple hash routines simultaneously
 
 import (
 	"flag"
@@ -6,9 +9,14 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/signal"
 	"runtime"
+	"sync"
 	"sync/atomic"
 	"time"
+	"bytes"
+	"syscall"
+	
 )
 
 import (
@@ -29,8 +37,6 @@ import (
 import "github.com/splace/varbinary"
 import "github.com/splace/fsflags"
 
-const timeoutStatusCode = 124
-
 // use variable binary encoding as nonce
 type hashIndex struct {
 	varbinary.Uint64
@@ -41,6 +47,8 @@ func main() {
 	flag.UintVar(&leadingBitCount, "bits", 1, "Number of leading bits being searched for.")
 	var bitState bool
 	flag.BoolVar(&bitState, "set", false, "Leading bits set.")
+	var bitMax bool
+	flag.BoolVar(&bitMax, "max", false, "Search for maximum number of matching bits. (until ctrl-c or end time).")
 	var hashType string
 	flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of \"MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256\"")
 	//flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256,BLAKE2s_256,BLAKE2b_256,BLAKE2b_384,BLAKE2b_512")
@@ -70,7 +78,7 @@ func main() {
 
 	if help {
 		flag.Usage()
-		os.Exit(0)
+		os.Exit(1)
 	}
 
 	// for optimisation #1.1
@@ -118,7 +126,8 @@ func main() {
 		//	case "BLAKE2b_512":
 		//		baseHasher = crypto.BLAKE2b_512.New()
 	default:
-		log.Fatalf("Aborting, Unknown Hash Scheme:" + hashType)
+		log.Printf("Aborting, Unknown Hash Scheme:" + hashType)
+		os.Exit(22)
 	}
 
 	if logToo.File == nil {
@@ -140,18 +149,21 @@ func main() {
 	if sink.File == nil {
 		sink.File = os.Stdout
 		if _, err := io.Copy(baseHasher, source); err != nil {
-			log.Fatal(err)
+			log.Print(err)
+			os.Exit(5)
 		}
 	} else {
-		// if not stdout write the source to the sink now, so later writing of the nonce then is appended.
+		// if not stdout then write the source to the sink now, so later writing of the nonce is appended.
 		if _, err := io.Copy(baseHasher, io.TeeReader(source, sink)); err != nil {
-			log.Fatal(err)
+			log.Print(err)
+			os.Exit(5)
 		}
 	}
 	source.Close()
 
 	if leadingBitCount > 128 {
-		log.Fatalf("Aborting, leading bits matching over 128 not supported (%v)", leadingBitCount)
+		log.Printf("Aborting, over 128 leading bits matching not supported (%v)", leadingBitCount)
+		os.Exit(33)
 	}
 
 	// because of optimisation#1, need to find hash index with one byte removed.
@@ -164,18 +176,40 @@ func main() {
 		stopHashIndex = 1<<64 - 1
 	}
 
+	stopChan := make(chan os.Signal)
+	signal.Notify(stopChan, os.Interrupt,os.Kill)
+
 	startTime := time.Now()
 	doLog := time.NewTicker(logInterval)
+	nonce := new(bytes.Buffer)
+	var nonceMutex sync.Mutex // prevent nonce updates if two threads finds answers simultaneously
+
 	go func() {
 		lhashIndex := startHashIndex
-		for t := range doLog.C {
-			runningFor := t.Sub(startTime)
-			if limit > 0 && runningFor > limit {
-				progressLog.Print("Aborting: time limit reached")
-				os.Exit(timeoutStatusCode)
+		// TODO trap signal to write existing max hash
+		for {
+			select {
+			case code := <-stopChan:
+				progressLog.Print("Aborting: signal received.")
+				if bitMax{
+					nonceMutex.Lock()
+					io.Copy(sink,nonce)
+				}
+				sink.Close()
+				os.Exit(int(code.(syscall.Signal)))
+			case t := <-doLog.C :
+				if limit > 0 && t.Sub(startTime) > limit {
+					progressLog.Print("Aborting: time limit reached.")
+					if bitMax{
+						nonceMutex.Lock()
+						io.Copy(sink,nonce)
+					}
+					sink.Close()
+					os.Exit(124)
+				}
+				progressLog.Printf("∑#%d @%v\t%.0f#/s\tMean Match:%v", startHashIndex, t.Sub(startTime)/time.Second*time.Second, float64(startHashIndex-lhashIndex)/logInterval.Seconds(), (logInterval / time.Duration(startHashIndex-lhashIndex) * (1 << leadingBitCount) / time.Second * time.Second))
+				lhashIndex = startHashIndex
 			}
-			progressLog.Printf("∑#%d @%v\t%.0f#/s\tMean Match:%v", startHashIndex, runningFor/time.Second*time.Second, float64(startHashIndex-lhashIndex)/logInterval.Seconds(), (logInterval / time.Duration(startHashIndex-lhashIndex) * (1 << leadingBitCount) / time.Second * time.Second))
-			lhashIndex = startHashIndex
 		}
 	}()
 
@@ -185,10 +219,12 @@ func main() {
 	} else {
 		matchCondition = leadingZeroBits(leadingBitCount)
 	}
-
-	if sum := baseHasher.Sum(nil); matchCondition(sum) {
-		progressLog.Printf("Match on Source file as-is. Hash(%s):[% x]", hashType, sum)
-		os.Exit(0)
+	if !bitMax {
+		if sum := baseHasher.Sum(nil); matchCondition(sum) {
+			progressLog.Printf("Match on Source file as-is. Hash(%s):[% x]", hashType, sum)
+			sink.Close()
+			os.Exit(0)
+		}
 	}
 
 	stride := uint64(runtime.NumCPU())
@@ -216,20 +252,39 @@ func main() {
 				branchHasher.Write(arrayOfBytePerms[i])
 				branchHasher.Sum(sum[:0])
 				if matchCondition(sum) {
-					doLog.Stop()
-					progressLog.Printf("#%d @%.1fs\tMatch:%q+[%s %x] Saving:%q Hash(%s):[% x]", uint64(hashIndexAppend(hashIndex{Uint64: varbinary.Uint64(hi)}, arrayOfBytePerms[i][0]).Uint64), time.Since(startTime).Seconds(), &source, varbinary.Uint64(hi), arrayOfBytePerms[i], &sink, hashType, sum)
-					n = varbinary.Uint64Put(varbinary.Uint64(hi), buf)
-					sink.Write(buf[:n])
-					sink.Write(arrayOfBytePerms[i])
-					sink.Close()
-					os.Exit(0)
+					buf[n]=arrayOfBytePerms[i][0]
+					nonceMutex.Lock()
+					nonce.Reset()
+					nonce.Write(buf[:n+1])
+					nonceMutex.Unlock()
+					if bitMax{
+						for {
+							progressLog.Printf("#%d @%.1fs\tMatch(%d bits):%q+[%s %x] Saving:%q Hash(%s):[% x]", uint64(hashIndexAppend(hashIndex{Uint64: varbinary.Uint64(hi)}, arrayOfBytePerms[i][0]).Uint64), time.Since(startTime).Seconds(), leadingBitCount,&source, varbinary.Uint64(hi), arrayOfBytePerms[i], &sink, hashType, sum)
+							leadingBitCount++
+							if bitState {
+								matchCondition = leadingSetBits(leadingBitCount)
+							} else {
+								matchCondition = leadingZeroBits(leadingBitCount)
+							}
+							if matchCondition(sum){continue} // loop while continue to match
+							break
+						}
+					}else{
+						doLog.Stop()
+						progressLog.Printf("#%d @%.1fs\tMatch(%d bits):%q+[%s %x] Saving:%q Hash(%s):[% x]", uint64(hashIndexAppend(hashIndex{Uint64: varbinary.Uint64(hi)}, arrayOfBytePerms[i][0]).Uint64), time.Since(startTime).Seconds(), leadingBitCount,&source, varbinary.Uint64(hi), arrayOfBytePerms[i], &sink, hashType, sum)
+						n = varbinary.Uint64Put(varbinary.Uint64(hi), buf)
+						nonceMutex.Lock()
+						io.Copy(sink,nonce)
+						sink.Close()
+						os.Exit(0)
+					}
 				}
 			}
 			atomic.AddUint64(&startHashIndex, 0x100) //keep track of number checked, optimisation#1: each byte tested
 		}
 	}
 
-	// start a thread for each core, each searching from different start indexes, but striding the same so always missing each other.
+	// start go-routines for each core, each searching from different start indexes, but striding the same so always missing each other.
 	for t := 0; t < runtime.NumCPU()-1; t++ {
 		go func(s uint64) {
 			searchStripe(s)
