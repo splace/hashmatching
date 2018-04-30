@@ -27,11 +27,11 @@ import (
 	_ "crypto/sha256"
 	_ "crypto/sha512"
 /*
-	//	_ "golang.org/x/crypto/blake2b"
-	//	_ "golang.org/x/crypto/blake2s"
-	//	_ "golang.org/x/crypto/md4"
-	//	_ "golang.org/x/crypto/ripemd160"
-	//	_ "golang.org/x/crypto/sha3"
+	_ "golang.org/x/crypto/blake2b"
+	_ "golang.org/x/crypto/blake2s"
+	_ "golang.org/x/crypto/md4"
+	_ "golang.org/x/crypto/ripemd160"
+	_ "golang.org/x/crypto/sha3"
 */
 )
 
@@ -74,12 +74,12 @@ func main() {
 	var bitMax bool
 	flag.BoolVar(&bitMax, "max", false, "Search for maximum number of matching bits. (until ctrl-c or end time).")
 	var hashType string
-    availableNames:="|"
+    availableHashNames:="|"
 	for k := range availableHashMakers {
-		availableNames+=k
-		availableNames+=availableNames[:1]
+		availableHashNames+=k
+		availableHashNames+=availableHashNames[:1]
 	}
-	flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of "+availableNames)
+	flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of "+availableHashNames)
 	var startHashIndex uint64
 	flag.Uint64Var(&startHashIndex, "start", 0, "Hash index to start search from.(default:#0)")
 	var stopHashIndex uint64
