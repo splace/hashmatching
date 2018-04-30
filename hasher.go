@@ -174,11 +174,10 @@ func main() {
 	startTime := time.Now()
 	doLog := time.NewTicker(logInterval)
 	nonce := new(bytes.Buffer)
-	var nonceMutex sync.Mutex // prevent nonce updates if two threads finds answers simultaneously
+	var nonceMutex sync.Mutex // prevent nonce updates if two threads find answers simultaneously
 
 	go func() {
 		lhashIndex := startHashIndex
-		// TODO trap signal to write existing max hash
 		for {
 			select {
 			case code := <-stopChan:
