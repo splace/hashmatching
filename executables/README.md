@@ -15,11 +15,13 @@
 
 ```
 Usage of ./hasher:
+  -bits uint
+    	Number of leading bits being searched for. (default 1)
   -end duration
     	search time limit.
   -h	display help/usage.
   -hash string
-    	hash type. one of "MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256" (default "SHA1")
+    	hash type. one of |MD4|SHA1|SHA224|SHA256|SHA384|SHA512|SHA512_224|MD5|SHA512_256| (default "SHA1")
   -help
     	display help/usage.
   -i value
@@ -30,6 +32,8 @@ Usage of ./hasher:
     	time between log status reports. (default 1s)
   -log value
     	progress log destination.(default:Stderr)
+  -max
+    	Search for maximum number of matching bits. (until ctrl-c or end time).
   -o value
     	output file, written with input file + nonce appended.(default:Stdout just written with nonce.)
   -output value
@@ -38,14 +42,11 @@ Usage of ./hasher:
   -quiet
     	no progress logging.
   -set
-    	leading bits set.
+    	Leading bits set.
   -start uint
     	Hash index to start search from.(default:#0)
   -stop uint
     	Hash index to stop search at.(default:#0 = unlimited)
-  -bits uint
-    	Number of leading bits being searched for. (default 1)
-
 ```    	
  
 example: append to 'test.bin' to make it have an MD5 starting with 24 zero bits.
@@ -83,7 +84,7 @@ $ echo $?
 ```
 Notes: 
 
-Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(this file 'README.md' will need to not be in the working folder.)
+Checking the result hash with above command wont work if any other files but the exe's and the nonce are in the folder.('README.md' will need removing.)
 
-The check is so complex to be able to parse the output from 'sum512sum', which isn't able to pipe just the result.
+The check is so complex in order to parse the output from 'sum512sum', which isn't capable of piping just the result.
 
