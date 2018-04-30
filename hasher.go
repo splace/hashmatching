@@ -16,7 +16,8 @@ import (
 	"time"
 	"bytes"
 	"syscall"
-	
+	"hash"
+	"reflect"
 )
 
 import (
@@ -25,13 +26,13 @@ import (
 	_ "crypto/sha1"
 	_ "crypto/sha256"
 	_ "crypto/sha512"
+/*
 	//	_ "golang.org/x/crypto/blake2b"
 	//	_ "golang.org/x/crypto/blake2s"
 	//	_ "golang.org/x/crypto/md4"
 	//	_ "golang.org/x/crypto/ripemd160"
 	//	_ "golang.org/x/crypto/sha3"
-	"hash"
-	"reflect"
+*/
 )
 
 import "github.com/splace/varbinary"
@@ -42,6 +43,29 @@ type hashIndex struct {
 	varbinary.Uint64
 }
 
+var availableHashMakers map[string]func()hash.Hash = map[string]func()hash.Hash{
+	"MD4":crypto.MD4.New,
+	"MD5":crypto.MD5.New,
+	"SHA1":crypto.SHA1.New,
+	"SHA224":crypto.SHA224.New,
+	"SHA256":crypto.SHA256.New,
+	"SHA384":crypto.SHA384.New,
+	"SHA512":crypto.SHA512.New,
+	"SHA512_224":crypto.SHA512_224.New,
+	"SHA512_256":crypto.SHA512_256.New,
+/*
+	"RIPEMD160":crypto.RIPEMD160.New,
+	"SHA3_224":crypto.SHA3_224.New,
+	"SHA3_256":crypto.SHA3_256.New,
+	"SHA3_384":crypto.SHA3_384.New,
+	"SHA3_512":crypto.SHA3_512.New,
+	"BLAKE2s_256":crypto.BLAKE2s_256.New,
+	"BLAKE2b_256":crypto.BLAKE2b_256.New,
+	"BLAKE2b_384":crypto.BLAKE2b_384.New,
+	"BLAKE2b_512":crypto.BLAKE2b_512.New,
+*/
+}
+
 func main() {
 	var leadingBitCount uint
 	flag.UintVar(&leadingBitCount, "bits", 1, "Number of leading bits being searched for.")
@@ -50,8 +74,12 @@ func main() {
 	var bitMax bool
 	flag.BoolVar(&bitMax, "max", false, "Search for maximum number of matching bits. (until ctrl-c or end time).")
 	var hashType string
-	flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of \"MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256\"")
-	//flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of MD4,MD5,SHA1,SHA224,SHA256,SHA384,SHA512,RIPEMD160,SHA3_224,SHA3_256,SHA3_384,SHA3_512,SHA512_224,SHA512_256,BLAKE2s_256,BLAKE2b_256,BLAKE2b_384,BLAKE2b_512")
+    availableNames:="|"
+	for k := range availableHashMakers {
+		availableNames+=k
+		availableNames+=availableNames[:1]
+	}
+	flag.StringVar(&hashType, "hash", "SHA1", "hash type. one of "+availableNames)
 	var startHashIndex uint64
 	flag.Uint64Var(&startHashIndex, "start", 0, "Hash index to start search from.(default:#0)")
 	var stopHashIndex uint64
@@ -86,49 +114,13 @@ func main() {
 	for i := range arrayOfBytePerms {
 		arrayOfBytePerms[i] = []byte{byte(i)}
 	}
-
-	var baseHasher hash.Hash
-	switch hashType {
-	case "MD4":
-		baseHasher = crypto.MD4.New()
-	case "MD5":
-		baseHasher = crypto.MD5.New()
-	case "SHA1":
-		baseHasher = crypto.SHA1.New()
-	case "SHA224":
-		baseHasher = crypto.SHA224.New()
-	case "SHA256":
-		baseHasher = crypto.SHA256.New()
-	case "SHA384":
-		baseHasher = crypto.SHA384.New()
-	case "SHA512":
-		baseHasher = crypto.SHA512.New()
-	case "SHA512_224":
-		baseHasher = crypto.SHA512_224.New()
-	case "SHA512_256":
-		baseHasher = crypto.SHA512_256.New()
-		//	case "RIPEMD160":
-		//		baseHasher = crypto.RIPEMD160.New()
-		//	case "SHA3_224":
-		//		baseHasher = crypto.SHA3_224.New()
-		//	case "SHA3_256":
-		//		baseHasher = crypto.SHA3_256.New()
-		//	case "SHA3_384":
-		//		baseHasher = crypto.SHA3_384.New()
-		//	case "SHA3_512":
-		//		baseHasher = crypto.SHA3_512.New()
-		//	case "BLAKE2s_256":
-		//		baseHasher = crypto.BLAKE2s_256.New()
-		//	case "BLAKE2b_256":
-		//		baseHasher = crypto.BLAKE2b_256.New()
-		//	case "BLAKE2b_384":
-		//		baseHasher = crypto.BLAKE2b_384.New()
-		//	case "BLAKE2b_512":
-		//		baseHasher = crypto.BLAKE2b_512.New()
-	default:
+	
+	if _,in := availableHashMakers[hashType];!in{
 		log.Printf("Aborting, Unknown Hash Scheme:" + hashType)
 		os.Exit(22)
-	}
+		}
+		
+	baseHasher := availableHashMakers[hashType]()
 
 	if logToo.File == nil {
 		logToo.File = os.Stderr
@@ -207,7 +199,7 @@ func main() {
 					sink.Close()
 					os.Exit(124)
 				}
-				progressLog.Printf("∑#%d @%v\t%.0f#/s\tMean Match:%v", startHashIndex, t.Sub(startTime)/time.Second*time.Second, float64(startHashIndex-lhashIndex)/logInterval.Seconds(), (logInterval / time.Duration(startHashIndex-lhashIndex) * (1 << leadingBitCount) / time.Second * time.Second))
+				progressLog.Printf("\t∑#%d @%v\t%.0f#/s\tMean Match:%v", startHashIndex, t.Sub(startTime)/time.Second*time.Second, float64(startHashIndex-lhashIndex)/logInterval.Seconds(), (logInterval / time.Duration(startHashIndex-lhashIndex) * (1 << leadingBitCount) / time.Second * time.Second))
 				lhashIndex = startHashIndex
 			}
 		}
