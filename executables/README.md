@@ -67,7 +67,7 @@ cat !(nonce) nonce | sha512sum   # cat command here pipes files deterministicall
 
 example: the log produced from creating the file 'nonce32' in this folder (32 leading zero bits nonce for all exe's in this directory) using 2 threads and then checking it.
 ```
-cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1m -hash=SHA512 -end=20h >nonce32
+$ cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1m -hash=SHA512 -end=20h >nonce32
 2018/04/01 20:33:08 Loading:"/dev/stdin"
 2018/04/01 20:33:08 Starting thread @ #1
 2018/04/01 20:33:08 Starting thread @ #0
@@ -75,7 +75,7 @@ cat h* | ./hasher\[SYSV64\].elf -bits=32 -interval=1m -hash=SHA512 -end=20h >non
 2018/04/01 20:35:08 ∑#173457665 @2m0s	1462093#/s	Mean Match:48m53s
 ...
 2018/04/01 21:38:35 #1036520539 @3926.9s	Match:"/dev/stdin"+[5A 0B C7 3c] Saving:"/dev/stdout" Hash(SHA512):[00 00 00 00 59 21 8c 81 f3 53 3a 65 48 57 ba 2b f0 40 e0 51 57 b3 6f 25 a7 12 cc 74 9e b7 a4 7b 33 63 2b 8e 05 1b 0e 42 d5 7e ad 3b 61 bb cf b0 22 76 11 6c 73 e7 63 0a 81 cd 5e 70 d3 b1 61 49]
-cat h* nonce32 | sha512sum
+$ cat h* nonce32 | sha512sum
 0000000059218c81f3533a654857ba2bf040e05157b36f25a712cc749eb7a47b33632b8e051b0e42d57ead3b61bbcfb02276116c73e7630a81cd5e70d3b16149  -
 $  cat !(nonce32) nonce32 | sha512sum | tr " " "\n" | head -n 1 | [[ `xargs echo $1` < '1' ]]
 $ echo $?
@@ -83,7 +83,7 @@ $ echo $?
 ```
 Notes: 
 
-Checking the result hash, above, wont work if any other files but the exe's and the nonce are in the working folder.(this file 'README.md' will need to not be in the working folder.)
+Confirming the result hash, using above, wont work if any other files but the exe's and the nonce are in the folder.(which means the file 'README.md' will need to be removed.)
 
-The check is so complex to be able to parse the output from 'sum512sum', which isn't able to pipe just the result.
+The check code needs to be so complex simply to parse the output from 'sum512sum', which isn't able to pipe just the result.
 
