@@ -12,9 +12,9 @@ to search for a hash greater than a value, say (2^^hash-bit-length - 2^^x), use 
 
 # characteristics
 
-each increment of the bit count halves to chance of matching, so on average doubles the searches needed.  
+each increment of the bit count halves the chance of matching, so on average doubles the searches needed.  
 
-uses the standard libs hashing routines, so supports what they do, see; executables/readme/usage/hash
+standard lib hashing routines are used, so this supports what they do, see; executables/readme/usage/hash
 
 multi-threaded, scales with cores pretty precisely, since no inter-thread comms.
 
