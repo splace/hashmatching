@@ -2,7 +2,7 @@ searches for a sequence of bytes, usually starting short and growing in length, 
 
 for usage see; executables/readme/usage
 
-# examples
+# bits
 
 to search for a hash less than a value, say 2^^x, use (hash bit length)-x leading zero bits.
 
@@ -19,6 +19,12 @@ uses the standard libs hashing routines, so supports what they do, see; executab
 multi-threaded, scales with cores pretty precisely, since no inter-thread comms.
 
 sequences of bytes have a reference number, uint64, called the hash index, this can be used to start a new search where another left off, without duplication.
+
+# binaries
+
+This being pure Go, a command line utility and just performing computation, it has no dependencies. Stand alone executable are provided, for major architectures.
+
+by way of an example use; the extire folder of binaries is itself hash-matched to produce some proof of work and provide some hinderence to malicious modification. ([more info](/executables/readme.md).)
 
 # performance
 
