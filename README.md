@@ -1,6 +1,14 @@
 searches for a sequence of bytes, usually starting short and growing in length, that when appended to some source data they together have a hash with, a number of, its leading bits equal to either zero or one.
 
-for usage see; executables/readme/usage
+# uses
+
+since many file formats can accept appended bytes, without breaking, this can allow a repository to contain all individually hashed files, or folders, whose hashes are within a known range, negating the need for a central record of hashes.
+
+if file changes are infrequent then the proof-of-work, associated with generating the hash, could be very high.
+
+# usage
+
+ see: executables/readme/usage
 
 # examples
 
@@ -24,7 +32,7 @@ sequences of bytes have a reference number, uint64, called the hash index, this 
 
 |cpu|hash rate SHA512|Watts|#/j|
 |-|-|-|-|
-|E4700, 2-Core 2.6GHz|1.45M|60|24k|
+|E4700, 2-Core 2.6GHz|1.55M|60|26k|
 |raspberry pi3, 4-Core 1.2GHz|240k|2.5|100k|
 |i7 7700K  4-core 4.2GHz|10M (guess)|90|110k|
 |Threadripper 1920X 12-Core 4GHz|24M (big guess)|180|130k|
